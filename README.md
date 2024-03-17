@@ -43,7 +43,7 @@ run_bbou_app()
 1.  Install the package
 2.  Click on the Addins drop-down and select Start bboushiny App
 
-<img src="https://github.com/poissonconsulting/bboushiny/blob/main/images/addins.png" alt="addin-screenshot" width="600"/>
+<img src="inst/images/addins.png" alt="addin-screenshot" width="600"/>
 
 ### Overview of How to Use the App
 
@@ -55,9 +55,7 @@ run_bbou_app()
 - Download the results
 
 <figure>
-<img
-src="https://github.com/poissonconsulting/bboushiny/blob/main/images/app-home-page.png"
-alt="app-home-screenshot" />
+<img src="inst/images/app-home-page.png" alt="app-home-screenshot" />
 <figcaption aria-hidden="true">app-home-screenshot</figcaption>
 </figure>
 
