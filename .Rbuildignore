@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^scripts$
+^\.github$
+^app\.R$
+^www$
+^CODE_OF_CONDUCT\.md$
+^images$
+^README\.Rmd$
+^rsconnect$
+^docs$
