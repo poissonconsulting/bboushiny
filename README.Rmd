@@ -47,7 +47,7 @@ run_bbou_app()
 1. Install the package
 2. Click on the Addins drop-down and select Start bboushiny App 
 
-<img src="inst/images/addins.png" alt="addin-screenshot" width="600"/>
+<img src="man/images/addins.png" alt="addin-screenshot" width="600"/>
 
 ### Overview of How to Use the App
 
@@ -58,7 +58,7 @@ run_bbou_app()
 - Generate an estimate for Population Growth
 - Download the results 
 
-![app-home-screenshot](inst/images/app-home-page.png)
+![app-home-screenshot](man/images/app-home-page.png)
 
 ## Contribution
 
