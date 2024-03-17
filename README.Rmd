@@ -58,7 +58,7 @@ run_bbou_app()
 - Generate an estimate for Population Growth
 - Download the results 
 
-![app-home-screenshot](man/figures/app-home-page.png)
+<img src="man/figures/app-home-page.png" alt="app-home-screenshot"/>
 
 ## Contribution
 
