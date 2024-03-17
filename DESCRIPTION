@@ -1,0 +1,52 @@
+Package: bboushiny
+Type: Package
+Title: R Shiny App for Analysing Boreal Caribou Surival, Recruitment and Lambda
+Version: 0.1.0.9001
+Authors@R: c(
+    person("Pearson", "Ayla", , "ayla@poissonconsulting.ca", c("aut", "cre"), 
+            comment = c(ORCID = "0000-0001-7388-1222")),
+    person("Joe", "Thorley", , "joe@poissonconsulting.ca", "ctb", 
+    comment = c(ORCID = "0000-0002-7683-4592")),
+    person("Seb", "Dalgarno", , "seb@poissonconsulting.ca", role = "ctb",
+    comment = c(ORCID = "0000-0002-3658-4517")),
+    person("Environment and Climate Change Canada", role = "cph"),
+    person("Province of Alberta", role = "cph")
+    )
+Description: Use Bayesian methods to calculate survival, recruitment and lambda
+  as well as confidence intervals.
+License: Apache License (>= 2)
+Depends: 
+    nimble,
+    R (>= 4.1)
+Imports:
+    bboudata,
+    bboutools,
+    bs4Dash,
+    chk,
+    dplyr,
+    DT,
+    forcats,
+    ggplot2,
+    readr,
+    readxl,
+    rlang,
+    scales,
+    shiny,
+    shinyhelper,
+    shinyjs,
+    tidyr,
+    writexl
+Remotes:
+    poissonconsulting/bboutools,
+    poissonconsulting/bboudata
+Suggests: 
+    testthat (>= 3.0.0),
+    withr
+URL: https://github.com/poissonconsulting/bboushiny
+BugReports: https://github.com/poissonconsulting/bboushiny/issues
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1
+Language: en-US
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)

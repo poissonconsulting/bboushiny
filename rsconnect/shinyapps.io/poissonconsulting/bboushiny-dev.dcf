@@ -1,0 +1,9 @@
+name: bboushiny-dev
+title:
+username:
+account: poissonconsulting
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8949394
+bundleId: 8376640
+url: https://poissonconsulting.shinyapps.io/bboushiny-dev/
