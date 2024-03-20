@@ -10,3 +10,4 @@
 ^README\.Rmd$
 ^rsconnect$
 ^docs$
+^codecov\.yml$
