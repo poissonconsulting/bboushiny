@@ -21,7 +21,7 @@ app_ui <- function() {
     help = NULL,
     header = dashboardHeader(
       ... = div(
-        h3("Boreal Caribou Survival, Recruitment, & Population Growth"),
+        h3("Boreal Caribou Survival, Recruitment & Population Growth"),
         style = "vertical-align: baseline;"
       )
     ),
