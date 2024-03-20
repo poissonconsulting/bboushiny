@@ -8,6 +8,8 @@
 [![R-CMD-check](https://github.com/poissonconsulting/bboushiny/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/poissonconsulting/bboushiny/actions/workflows/R-CMD-check.yaml)
 [![Test App
 Deployed](https://github.com/poissonconsulting/bboushiny/workflows/deploy-app/badge.svg)](https://github.com/poissonconsulting/bboushiny/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/poissonconsulting/bboushiny/branch/main/graph/badge.svg)](https://app.codecov.io/gh/poissonconsulting/bboushiny?branch=main)
 <!-- badges: end -->
 
 An R shiny app for estimating Boreal Caribou Population Growth from
