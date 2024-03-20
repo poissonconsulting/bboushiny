@@ -1,6 +1,6 @@
 Package: bboushiny
 Type: Package
-Title: R Shiny App for Analysing Boreal Caribou Surival, Recruitment and Lambda
+Title: Shiny App for Analysing Boreal Caribou Surival, Recruitment and Lambda
 Version: 0.1.0.9001
 Authors@R: c(
     person("Pearson", "Ayla", , "ayla@poissonconsulting.ca", c("aut", "cre"), 
