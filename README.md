@@ -30,7 +30,13 @@ To install the developmental version from
 remotes::install_github("poissonconsulting/bboushiny")
 ```
 
-### How to Launch the App with Code
+The package must be installed first before the app can be launched.
+
+### How to Launch the App
+
+#### Using Code
+
+Run the `run_bbou_app()` function.
 
 ``` r
 # install.packages("bboushiny")
@@ -38,10 +44,9 @@ library(bboushiny)
 run_bbou_app()
 ```
 
-### How to Launch the App with RStudio Addins Button
+#### Using RStudio Addins Button
 
-1.  Install the package
-2.  Click on the Addins drop-down and select Start bboushiny App
+Click on the Addins drop-down and select Start bboushiny App
 
 <img src="man/figures/addins.png" alt="addin-screenshot" width="600"/>
 

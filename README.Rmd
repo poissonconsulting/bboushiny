@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/poissonconsulting/bboushiny/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/poissonconsulting/bboushiny/actions/workflows/R-CMD-check.yaml)
 [![Test App Deployed](https://github.com/poissonconsulting/bboushiny/workflows/deploy-app/badge.svg)](https://github.com/poissonconsulting/bboushiny/actions)
+[![Codecov test coverage](https://codecov.io/gh/poissonconsulting/bboushiny/branch/main/graph/badge.svg)](https://app.codecov.io/gh/poissonconsulting/bboushiny?branch=main)
 <!-- badges: end -->
 
 An R shiny app for estimating Boreal Caribou Population Growth from survival and recruitment data.
@@ -34,7 +35,13 @@ To install the developmental version from [GitHub](https://github.com/poissoncon
 remotes::install_github("poissonconsulting/bboushiny")
 ```
 
-### How to Launch the App with Code
+The package must be installed first before the app can be launched.
+
+### How to Launch the App
+
+#### Using Code
+
+Run the `run_bbou_app()` function.
 
 ```{r, eval=FALSE}
 # install.packages("bboushiny")
@@ -42,10 +49,9 @@ library(bboushiny)
 run_bbou_app()
 ```
 
-### How to Launch the App with RStudio Addins Button
+#### Using RStudio Addins Button
 
-1. Install the package
-2. Click on the Addins drop-down and select Start bboushiny App 
+Click on the Addins drop-down and select Start bboushiny App 
 
 <img src="man/figures/addins.png" alt="addin-screenshot" width="600"/>
 
