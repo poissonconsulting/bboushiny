@@ -1,7 +1,7 @@
 Package: bboushiny
 Type: Package
 Title: Shiny App for Analysing Boreal Caribou Surival, Recruitment and Lambda
-Version: 0.1.0.9001
+Version: 0.2.0
 Authors@R: c(
     person("Pearson", "Ayla", , "ayla@poissonconsulting.ca", c("aut", "cre"), 
             comment = c(ORCID = "0000-0001-7388-1222")),

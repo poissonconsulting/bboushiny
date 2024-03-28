@@ -1,4 +1,9 @@
-# bboushiny (development version)
+<!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
+
+# bboushiny 0.2.0
+
+- Internal changes only.
+
 
 # bboushiny 0.1.0.9001
 
