@@ -66,6 +66,16 @@ Click on the Addins drop-down and select Start bboushiny App
 
 <img src="man/figures/app-home-page.png" alt="app-home-screenshot"/>
 
+## bbou Suite
+
+`bboushiny` is part of the bbou suite of tools. 
+Other packages in this suite include:
+
+- [bboudata](https://github.com/poissonconsulting/bboudata)
+- [bboutools](https://github.com/poissonconsulting/bboutools)
+- [bbouretro](https://github.com/poissonconsulting/bbouretro)
+- [bbousims](https://github.com/poissonconsulting/bbousims)
+
 ## Contribution
 
 Please report any [issues](https://github.com/poissonconsulting/bboushiny/issues).
