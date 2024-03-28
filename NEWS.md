@@ -2,11 +2,6 @@
 
 # bboushiny 0.2.0
 
-- Internal changes only.
-
-
-# bboushiny 0.1.0.9001
-
 - Ticked box added to allow for option to add Trend in the Survival and Recruitment tabs.
 - Added button to load demo data for both the Survival and Recruitment tab.
 - App will now show the error message in a pop-up box and stop the model instead of crashing when the model hits an error. 
@@ -21,4 +16,7 @@
 - The Recruitment tab data plot is faceted by year and sorted by caribou year. 
 - The Population Growth tab had Population Change outputs added to it. 
 - Various bug fixes.
+
+# bboushiny 0.1.0
+
 - Added a `NEWS.md` file to track changes to the package.
