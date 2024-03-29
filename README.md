@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/poissonconsulting/bboushiny/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/poissonconsulting/bboushiny/actions/workflows/R-CMD-check.yaml)
 [![Test App
 Deployed](https://github.com/poissonconsulting/bboushiny/workflows/deploy-app/badge.svg)](https://github.com/poissonconsulting/bboushiny/actions)
