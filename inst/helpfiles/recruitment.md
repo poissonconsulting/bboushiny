@@ -133,6 +133,7 @@ Be patient.
 If any additional data cleaning is done before feeding the data into the model a pop-up box will appear with notes about what was done. 
 
 Once the model is done running the results will appear in the Results box. 
+The estimated recruitment reported is the adjusted recruitment following methods outlined in DeCesare et al. (2012).
 
 ##### Table Year and Plot Year
 
@@ -163,3 +164,11 @@ The results will be cleared when:
 #### Need More Help
 
 Check out the Help tab for more information or trouble shooting. 
+
+#### References
+
+DeCesare, Nicholas J., Mark Hebblewhite, Mark Bradley, Kirby G. Smith,
+David Hervieux, and Lalenia Neufeld. 2012. “Estimating Ungulate
+Recruitment and Growth Rates Using Age Ratios.” The Journal of Wildlife
+Management 76 (1): 144–53. [https://doi.org/10.1002/jwmg.244](https://doi.org/10.1002/jwmg.244)
+
