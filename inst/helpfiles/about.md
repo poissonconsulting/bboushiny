@@ -74,9 +74,8 @@ The annual recruitment in boreal caribou population is typically
 estimated from annual calf:cow ratios.
 
 [bboutools](https://poissonconsulting.github.io/bboutools/)
-fits a Bayesian Poisson annual recruitment model to the
-counts of calves, cows, yearlings unknown adults and potentially bulls
-using a Bayesian Poisson annual recruitment model. Each yearling is
+fits a Bayesian Binomial recruitment model to the
+annual counts of calves, cows, yearlings, unknown adults and potentially, bulls. Each yearling is
 assumed to be a female with a probability of 0.5 while by default each
 unknown adult is assumed to be a female with a probability of 0.65 to
 account for the higher mortality of males. The user can adjust the
@@ -90,20 +89,22 @@ expected to be similar to adult survival.
 
 The recruitment model with annual random effect and year trend is specified below in a simplified form of the BUGS language for readability.
 
-    b0 ~ Normal(-1.4, 0.5)
+    b0 ~ Normal(-1, 5)
     bYear ~ Normal(0, 1)
     adult_female_proportion ~ Beta(65, 35)
-    sAnnual ~  exponential(1)
+    sAnnual ~  Exponential(1)
     for(i in 1:nAnnual)  bAnnual[i] ~ Normal(0, sAnnual)
 
-    for(i in 1:nObs) {
+    for(i in 1:nAnnual) {
     FemaleYearlings[i] ~ Binomial(0.5, Yearlings[i])
     Cows[i] ~ Binomial(adult_female_proportion, CowsBulls[i])
     OtherAdultsFemales[i] ~ Binomial(adult_female_proportion, UnknownAdults[i])
-    log(eRecruitment[i]) <- b0 + bAnnual[Annual[i]] + bYear * Year[i]
+    logit(eRecruitment[i]) <- b0 + bAnnual[Annual[i]] + bYear * Year[i]
     AdultsFemales[i] <- max(FemaleYearlings[i] + Cows[i] + OtherAdultsFemales[i], 1)
-    Calves[i] ~ Poisson(eRecruitment[i] * AdultsFemales[i])
+    Calves[i] ~ Binomial(eRecruitment[i], AdultsFemales[i])
     }
+
+The annual predicted rescruitment estimates are adjusted following methods outlined in DeCesare et al. (2012). See below for details. 
 
 #### Growth Prediction
 
