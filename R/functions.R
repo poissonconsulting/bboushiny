@@ -325,7 +325,7 @@ check_data_month <- function(data) {
 #### Bboutool wrappers ####
 
 fit_recruitment_estimate <- function(data, adult_female_ratio,
-                                     yearling_female_ratio, year_trend,
+                                     calf_female_ratio, year_trend,
                                      year_start, nthin) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
@@ -337,7 +337,7 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
         data = data,
         nthin = n,
         adult_female_proportion = adult_female_ratio,
-        yearling_female_proportion = yearling_female_ratio,
+        sex_ratio = calf_female_ratio,
         year_trend = year_trend,
         year_start = year_start
       )
