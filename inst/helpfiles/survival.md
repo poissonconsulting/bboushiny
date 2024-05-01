@@ -99,7 +99,7 @@ Including the uncertain mortalities can be a helpful tool to determine how sensi
 You can do this by first running the analysis with the Include Uncertain Mortalities box not ticked then rerun the analysis with the box ticked and compare the estimates. 
 Don't forget to download your results after each run. 
 
-The default setting is to not include uncertain mortalities. 
+The default setting is to include uncertain mortalities. 
 
 To include the uncertain mortalities tick **yes**.
 

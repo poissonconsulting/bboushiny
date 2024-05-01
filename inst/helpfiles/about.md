@@ -75,13 +75,12 @@ estimated from annual calf:cow ratios.
 
 [bboutools](https://poissonconsulting.github.io/bboutools/)
 fits a Bayesian Binomial recruitment model to the
-annual counts of calves, cows, yearlings, unknown adults and potentially, bulls. Each yearling is
-assumed to be a female with a probability of 0.5 while by default each
-unknown adult is assumed to be a female with a probability of 0.65 to
-account for the higher mortality of males. The user can adjust the
-probability of an unknown adult being a female or estimate it from the
-counts of bulls and cows. As with survival, weakly informative priors
-are used by default and if there are
+annual counts of calves, cows, yearlings, unknown adults and potentially, bulls. 
+The default values assume each calf is a female with a 
+probability of 0.5 while each unknown adult is a female with a 
+probability of 0.65 to account for the higher mortality of males. 
+The user can adjust the sex ratios from the default as well as estimate the adult female ratio from the counts of bulls and cows. 
+As with survival, weakly informative priors are used by default and if there are
 five or more years, year is a random effect otherwise it is a fixed
 effect. It is up to the user to ensure that the data are from surveys
 that were conducted at the same time of year when calf survival is
