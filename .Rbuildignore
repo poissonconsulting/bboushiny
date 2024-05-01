@@ -11,3 +11,5 @@
 ^rsconnect$
 ^docs$
 ^codecov\.yml$
+^_pkgdown\.yml$
+^pkgdown$

@@ -264,8 +264,8 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
           }
         }
 
-        if (recruitment$yearling_female_ratio) {
-          l4 <- paste0("&nbsp yearling_female_proportion = ", recruitment$yearling_female_ratio, ",")
+        if (recruitment$calf_female_ratio) {
+          l4 <- paste0("&nbsp sex_ratio = ", recruitment$calf_female_ratio, ",")
         } else {
           l4 <- NULL
         }
@@ -304,14 +304,17 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
 
       l3 <- " "
 
-      l4 <- "bb_predict_recruitment(fit_recruitment)"
+      l4 <- paste0("bb_predict_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
 
       l5 <- "bb_plot_year_recruitment(fit_recruitment)"
 
       l6 <- " "
 
       if (recruitment$include_trend) {
-        l7 <- "bb_predict_recruitment_trend(fit_recruitment)<br/>bb_plot_year_trend_recruitment(fit_recruitment)"
+        l7 <- paste0(
+          "bb_predict_recruitment_trend(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")",
+          "<br/>bb_plot_year_trend_recruitment(fit_recruitment)"
+        )
       } else {
         l7 <- NULL
       }

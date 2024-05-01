@@ -293,7 +293,7 @@ mod_survival_server <- function(id) {
       checkboxInput(
         ns("include_morts_uncertain"),
         label = "Yes",
-        value = FALSE
+        value = TRUE
       )
     })
 

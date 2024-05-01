@@ -30,7 +30,8 @@ Check out the [`bboutools`](https://github.com/poissonconsulting/bboutools) pack
 
 ### How to Install the R Package
 
-To install the developmental version from [GitHub](https://github.com/poissonconsulting/bboushiny)
+To install the latest version from [GitHub](https://github.com/poissonconsulting/bboushiny)
+
 ```{r, eval=FALSE}
 # install.packages("remotes")
 remotes::install_github("poissonconsulting/bboushiny")

@@ -24,7 +24,7 @@ Complete the steps in order.
 2. Confirm the Caribou Year start month is correct.
 3. Fill in the template with your data and upload the file (csv or xlsx).
 4. Select a population and confirm the data is correct by checking the table and plot section under the Data box.
-5. Enter the sex ratio for Adults and Yearlings.
+5. Enter the sex ratio for Adults and Calves.
 6. Select whether to include year trend.
 7. Press the Estimate Recruitment button which will run the model and generate the outputs for the Results Box.
 
@@ -95,14 +95,14 @@ If the Select Population option is changed after the results are run it will cle
 
 Recruitment is the expected number of calves per adult female.
 The model sets the default probability of an unknown adult being female as 0.65.
-The model sets the default probability of a yearling being female as 0.50.
+The model sets the default probability of a calf being female as 0.50.
 The user can adjust this proportion with the Sex Ratio input boxes.
 
 For adults enter a number between 0 and 1 for the expected proportion of unknown adults that are female.
 If the sex ratio box is blank, then the probability is estimated from the proportion of bulls and cows using an informative prior of Beta(65, 35).
 The probability of an unknown adult being female is assumed to be the same in all days in all years.
 
-For yearlings enter a number between 0 and 1 for the expected proportion of yearlings that are female. 
+For calves enter a number between 0 and 1 for the expected proportion of calves that are female. 
 
 The sex ratios that are chosen for the analysis will be included in the downloaded results tables. 
 

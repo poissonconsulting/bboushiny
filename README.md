@@ -26,7 +26,7 @@ which contains more options for customizing the models.
 
 ### How to Install the R Package
 
-To install the developmental version from
+To install the latest version from
 [GitHub](https://github.com/poissonconsulting/bboushiny)
 
 ``` r

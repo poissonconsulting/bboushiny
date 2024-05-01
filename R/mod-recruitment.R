@@ -34,7 +34,7 @@ mod_recruitment_ui <- function(id, label = "recruitment") {
     uiOutput(ns("ui_select_population")),
     tags$label("5. Choose Sex Ratios"), br(),
     uiOutput(ns("ui_adult_sex_ratio")),
-    uiOutput(ns("ui_yearling_female_ratio")),
+    uiOutput(ns("ui_calf_female_ratio")),
     tags$label("6. Include Year Trend"),
     uiOutput(ns("ui_include_trend")),
     tags$label("7. Run Model"), br(),
@@ -110,7 +110,7 @@ mod_recruitment_server <- function(id, survival) {
       results_plot = NULL,
       results_table = NULL,
       adult_sex_ratio = NULL,
-      yearling_female_ratio = NULL,
+      calf_female_ratio = NULL,
       results_dl_list = NULL,
       data_type = FALSE,
       upload_file = FALSE,
@@ -269,10 +269,10 @@ mod_recruitment_server <- function(id, survival) {
       rv$adult_sex_ratio
     })
 
-    output$ui_yearling_female_ratio <- renderUI({
+    output$ui_calf_female_ratio <- renderUI({
       numericInput(
-        ns("yearling_female_ratio"),
-        label = "Yearling Female",
+        ns("calf_female_ratio"),
+        label = "Calf Female",
         value = 0.50,
         min = 0,
         max = 1,
@@ -281,8 +281,8 @@ mod_recruitment_server <- function(id, survival) {
     })
 
     observe({
-      rv$yearling_female_ratio <- input$yearling_female_ratio
-      rv$yearling_female_ratio
+      rv$calf_female_ratio <- input$calf_female_ratio
+      rv$calf_female_ratio
     })
 
     output$ui_include_trend <- renderUI({
@@ -311,7 +311,7 @@ mod_recruitment_server <- function(id, survival) {
         rv$adult_sex_ratio <- NULL
       }
 
-      if (is.na(rv$yearling_female_ratio)) {
+      if (is.na(rv$calf_female_ratio)) {
         return(
           modal_error_modal(
             "The Yearling Female ratio cannot be left blank.
@@ -328,7 +328,7 @@ mod_recruitment_server <- function(id, survival) {
           fit <- fit_recruitment_estimate(
             data = rv$data_filtered,
             adult_female_ratio = rv$adult_sex_ratio,
-            yearling_female_ratio = rv$yearling_female_ratio,
+            calf_female_ratio = rv$calf_female_ratio,
             year_trend = input$include_trend,
             year_start = survival$start_month_num,
             nthin = c(10, 50, 100, 500)
@@ -364,7 +364,10 @@ mod_recruitment_server <- function(id, survival) {
     observeEvent(rv$results,
       {
         withProgress(message = "Generating Results", value = 0, {
-          rv$results_table_year <- bboutools::bb_predict_recruitment(rv$results)
+          rv$results_table_year <- bboutools::bb_predict_recruitment(
+            rv$results,
+            sex_ratio = rv$calf_female_ratio
+          )
           rv$results_table_year
         })
       },
@@ -402,7 +405,7 @@ mod_recruitment_server <- function(id, survival) {
 
         glance_tbl <- bboutools::glance(rv$results)
         glance_tbl$AdultFemaleSexRatio <- input$adult_sex_ratio
-        glance_tbl$CalfFemaleSexRatio <- input$yearling_female_ratio
+        glance_tbl$CalfFemaleSexRatio <- rv$calf_female_ratio
         coef <- bboutools::coef(rv$results)
 
         rv$results_dl_list_year <- list(
@@ -501,7 +504,10 @@ mod_recruitment_server <- function(id, survival) {
       {
         req(input$include_trend)
         withProgress(message = "Generating Results", value = 0, {
-          rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(rv$results)
+          rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
+            rv$results,
+            sex_ratio = rv$calf_female_ratio
+          )
           rv$results_table_trend
         })
       },
@@ -540,7 +546,7 @@ mod_recruitment_server <- function(id, survival) {
 
         glance_tbl <- bboutools::glance(rv$results)
         glance_tbl$AdultFemaleSexRatio <- input$adult_sex_ratio
-        glance_tbl$CalfFemaleSexRatio <- input$yearling_female_ratio
+        glance_tbl$CalfFemaleSexRatio <- rv$calf_female_ratio
         coef <- bboutools::coef(rv$results)
 
         rv$results_dl_list_trend <- list(
@@ -600,7 +606,7 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when new adult female ratio selected"
     )
 
-    observeEvent(input$yearling_female_ratio,
+    observeEvent(input$calf_female_ratio,
       {
         rv$results <- NULL
         rv$results_plot_year <- NULL
