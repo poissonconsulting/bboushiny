@@ -1,5 +1,15 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# bboushiny 0.2.1
+
+- On the Survival tab the Data Plot now filters out missing data instead of throwing an error and not rendering the plot. 
+- On the Survival tab the Data Table does not sort by the CaribouYear and CaribouMonth anymore.
+- On the Survival tab Include Uncertain Mortalities is checked by default. 
+- On the Recruitment tab under Choose Sex Ratio the option name has changed from Yearling Female to Calf Female.
+- On the Population Growth tab the pop up that lets users know the code is running was updated to saying "Generating results."
+- The R Code tab has sex ratio parameter added to the predict functions. 
+- Bug fixes and internal changes. 
+
 # bboushiny 0.2.0
 
 - Ticked box added to allow for option to add Trend in the Survival and Recruitment tabs.
