@@ -27,7 +27,7 @@ plot_survival_data <- function(data) {
     )
   )
 
-  data <- data %>%
+  data <- data |>
     tidyr::drop_na()
 
   data$Month <- as.factor(data$Month)
