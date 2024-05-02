@@ -142,7 +142,7 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       req(survival$results)
       req(recruitment$results)
 
-      withProgress(message = "Generating lambda", value = 0, {
+      withProgress(message = "Generating results", value = 0, {
         rv$results_growth <- bboutools::bb_predict_growth(
           survival$results,
           recruitment$results
@@ -255,7 +255,7 @@ mod_population_growth_server <- function(id, survival, recruitment) {
     output$results_plot_growth <- renderPlot(
       {
         req(rv$results_growth)
-        withProgress(message = "Generating Results", value = 0, {
+        withProgress(message = "Generating results", value = 0, {
           rv$results_plot_growth <- bboutools::bb_plot_year_growth(rv$results_growth)
           rv$results_plot_growth
         })
@@ -291,7 +291,7 @@ mod_population_growth_server <- function(id, survival, recruitment) {
     output$results_plot_pop_change <- renderPlot(
       {
         req(rv$results_pop_change)
-        withProgress(message = "Generating Results", value = 0, {
+        withProgress(message = "Generating results", value = 0, {
           rv$results_plot_pop_change <- bboutools::bb_plot_year_population_change(rv$results_pop_change)
           rv$results_plot_pop_change
         })
