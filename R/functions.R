@@ -18,14 +18,17 @@ plot_survival_data <- function(data) {
   chk::check_data(
     data,
     list(
-      Month = 1L,
-      CaribouMonth = 1L,
-      CaribouYear = "",
-      StartTotal = 1L,
-      MortalitiesCertain = 1L,
-      MortalitiesUncertain = 1L
+      Month = c(1L, NA_integer_),
+      CaribouMonth = c(1L, NA_integer_),
+      CaribouYear = c("", NA_character_),
+      StartTotal = c(1L, NA_integer_),
+      MortalitiesCertain = c(1L, NA_integer_),
+      MortalitiesUncertain = c(1L, NA_integer_)
     )
   )
+
+  data <- data %>%
+    tidyr::drop_na()
 
   data$Month <- as.factor(data$Month)
   data$Alive <- data$StartTotal - data$MortalitiesCertain - data$MortalitiesUncertain
@@ -456,8 +459,7 @@ add_caribou_year <- function(data, start_month) {
           paste(data$Year, data$Year + 1L, sep = "-"),
           paste(data$Year - 1L, data$Year, sep = "-")
         )
-      ) |>
-      dplyr::arrange(.data$CaribouYear, .data$CaribouMonth)
+      )
   }
   data
 }
