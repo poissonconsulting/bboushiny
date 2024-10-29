@@ -1,27 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/404.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/index.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://poissonconsulting.github.io/bboushiny/reference/run_bbou_app.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://poissonconsulting.github.io/bboushiny/404.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/LICENSE.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/authors.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/index.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/news/index.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/reference/index.html</loc></url>
+<url><loc>https://poissonconsulting.github.io/bboushiny/reference/run_bbou_app.html</loc></url>
 </urlset>
+
