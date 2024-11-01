@@ -38,6 +38,11 @@ The package must be installed first before the app can be launched.
 
 ### How to Launch the App
 
+#### Deployed App
+
+The current working version of the app is available at
+<https://poissonconsulting.shinyapps.io/bboushiny/>.
+
 #### Using Code
 
 Run the `run_bbou_app()` function.
