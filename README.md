@@ -61,10 +61,9 @@ Click on the Addins drop-down and select Start bboushiny App
 
 ### Overview of How to Use the App
 
-- Download the template for the tab
+- Download the template in each tab (i.e., ‘Survival’, ‘Recruitment’)
 - Fill in the template with data
 - Upload your data and generate an estimate
-- Do this for both survival and recruitment
 - Generate an estimate for Population Growth
 - Download the results
 
