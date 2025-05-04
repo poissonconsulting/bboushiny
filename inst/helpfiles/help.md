@@ -34,14 +34,12 @@ The demo data is an example for what the uploaded data set should look like.
 - The template provided must be used.
 - The column names cannot be altered.
 - Do not add or delete columns.
-- For descriptions on each columns check the instructions on the tab.
-- If you are unsure of how the data should be structured then check out the demo data set for an example.
+- Columns are described in more detail in the 'Instructions' help tooltip above the 'Download template' button
+- If you are unsure of how the data should be structured, view the demo data set for an example.
 
 **Where is help located**
 
-Each tab has its own Instructions help file which is a located in the
-Instructions box next to the word Instructions. To have the instructions pop up 
-press the circle with the question mark in it. 
+Each of the Survival and Recruitment tabs have an 'Instructions' file that can be accessed by clicking the question mark icon above the 'Download template' button.
 
 **Clearing estimates**
 

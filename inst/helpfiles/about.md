@@ -103,7 +103,7 @@ The recruitment model with annual random effect and year trend is specified belo
     Calves[i] ~ Binomial(eRecruitment[i], AdultsFemales[i])
     }
 
-The annual predicted rescruitment estimates are adjusted following methods outlined in DeCesare et al. (2012). See below for details. 
+The annual predicted recruitment estimates are adjusted following methods outlined in DeCesare et al. (2012). See below for details. 
 
 #### Growth Prediction
 

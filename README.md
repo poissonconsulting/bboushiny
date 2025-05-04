@@ -61,11 +61,10 @@ Click on the Addins drop-down and select Start bboushiny App
 
 ### Overview of How to Use the App
 
-- Download the template for the tab
+- Download the data templates for survival and recruitment
 - Fill in the template with data
-- Upload your data and generate an estimate
-- Do this for both survival and recruitment
-- Generate an estimate for Population Growth
+- Upload your data in each tab and generate estimates
+- Generate estimates for Population Growth
 - Download the results
 
 <img src="man/figures/app-home-page.png" alt="app-home-screenshot"/>
@@ -91,3 +90,14 @@ Please note that the bboushiny project is released with a [Contributor
 Code of
 Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
+
+## Licensing
+
+Copyright 2022-2023 Environment and Climate Change Canada  
+Copyright 2024 Province of Alberta  
+
+The documentation is released under the [CC BY 4.0
+License](https://creativecommons.org/licenses/by/4.0/)
+
+The code is released under the [Apache License
+2.0](https://www.apache.org/licenses/LICENSE-2.0)
