@@ -10,7 +10,6 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-7683-4592")),
     person("Seb", "Dalgarno", , "seb@poissonconsulting.ca", role = "ctb",
            comment = c(ORCID = "0000-0002-3658-4517")),
-    person("Environment and Climate Change Canada", role = "cph"),
     person("Province of Alberta", role = "cph")
   )
 Description: Use Bayesian methods to calculate survival, recruitment and
