@@ -25,6 +25,8 @@ Complete the steps in order.
 2. Generate the recruitment estimate from the Recruitment tab.
 3. Press the Calculate Population Growth which will populate the Results box.
 
+It is important to note that even if recruitment reporting method selected in the Recruitment tab is calves per adult female, the adjusted recruitment will always be used to calculate population growth. 
+
 ### Confirming Estimates are Present
 
 To check if either the survival or recruitment estimate is present click on the
