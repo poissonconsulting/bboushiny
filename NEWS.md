@@ -1,5 +1,20 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# bboushiny 0.3.0
+
+- Merge pull request #9 from poissonconsulting/joss_review.
+
+  Joss review
+
+- Merge pull request #6 from poissonconsulting/updates.
+
+  Updates since changes to bboutools
+
+- Merge pull request #4 from poissonconsulting/dev.
+
+  changes to documentation following bboutools changes
+
+
 # bboushiny 0.2.1
 
 - On the Survival tab the Data Plot now filters out missing data instead of throwing an error and not rendering the plot. 
