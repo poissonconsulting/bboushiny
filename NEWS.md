@@ -1,19 +1,9 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
-# bboushiny 0.3.0
+# bboushiny 0.2.2
 
-- Merge pull request #9 from poissonconsulting/joss_review.
-
-  Joss review
-
-- Merge pull request #6 from poissonconsulting/updates.
-
-  Updates since changes to bboutools
-
-- Merge pull request #4 from poissonconsulting/dev.
-
-  changes to documentation following bboutools changes
-
+- Added option to select recruitment reporting method (adjusted recruitment or calves per adult female)
+- Added clarification on this in help file. 
 
 # bboushiny 0.2.1
 
