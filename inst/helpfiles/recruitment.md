@@ -26,8 +26,9 @@ Complete the steps in order.
 3. Fill in the template with your data and upload the file (csv or xlsx).
 4. Select a population and confirm the data is correct by checking the table and plot section under the Data box.
 5. Enter the sex ratio for Adults and Calves.
-6. Select whether to include year trend.
-7. Press the Estimate Recruitment button which will run the model and generate the outputs for the Results Box.
+6. Select the recruitment reporting method. 
+7. Select whether to include year trend.
+8. Press the Estimate Recruitment button which will run the model and generate the outputs for the Results Box.
 
 ### Detailed Instructions
 
@@ -94,7 +95,6 @@ If the Select Population option is changed after the results are run it will cle
 
 #### Choose Sex Ratios
 
-Recruitment is the expected number of calves per adult female.
 The model sets the default probability of an unknown adult being female as 0.65.
 The model sets the default probability of a calf being female as 0.50.
 The user can adjust this proportion with the Sex Ratio input boxes.
@@ -108,6 +108,21 @@ For calves enter a number between 0 and 1 for the expected proportion of calves 
 The sex ratios that are chosen for the analysis will be included in the downloaded results tables. 
 
 If the Sex Ratios option is changed after the results are run it will clear the results.
+
+#### Recruitment Reporting Method
+
+Annual recruitment estimates can be reported as calves per adult female or adjusted recruitment. 
+The adjusted recruitment (**R<sub>Δ</sub>**) is calculated from the calves per adult female (**R**) and sex ratio (**SR**) following methods described in DeCesare et al. (2012):
+
+**R<sub>F</sub> = R × SR**
+
+**R<sub>Δ</sub> = R<sub>F</sub> ÷ (1 + R<sub>F</sub>)**
+  
+where  **R<sub>F</sub>** is the female calves per adult female.
+
+If the reporting method is changed after the results are run, the results will be cleared.
+
+Note that regardless of reporting method selected in the Recruitment tab, the adjusted recruitment (**R<sub>Δ</sub>**) is always used to calculate population growth (lambda). 
 
 #### Include Year Trend
 
