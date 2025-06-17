@@ -36,9 +36,11 @@ mod_recruitment_ui <- function(id, label = "recruitment") {
     tags$label("5. Choose Sex Ratios"), br(),
     uiOutput(ns("ui_adult_sex_ratio")),
     uiOutput(ns("ui_calf_female_ratio")),
-    tags$label("6. Include Year Trend"),
+    tags$label("6. Choose Recruitment Type"),
+    uiOutput(ns("ui_recruitment_type")),
+    tags$label("7. Include Year Trend"),
     uiOutput(ns("ui_include_trend")),
-    tags$label("7. Run Model"), br(),
+    tags$label("8. Run Model"), br(),
     actionButton(
       ns("est_recruitment"),
       "Estimate Recruitment",
@@ -112,6 +114,7 @@ mod_recruitment_server <- function(id, survival) {
       results_table = NULL,
       adult_sex_ratio = NULL,
       calf_female_ratio = NULL,
+      recruitment_type = NULL,
       results_dl_list = NULL,
       data_type = FALSE,
       upload_file = FALSE,
@@ -286,6 +289,23 @@ mod_recruitment_server <- function(id, survival) {
       rv$calf_female_ratio
     })
 
+    output$ui_recruitment_type <- renderUI({
+      radioButtons(
+        ns("recruitment_type"),
+        label = NULL,
+        choices = list(
+          "Calves per Female Adult" = "recruitment_cf",
+          "Adjusted Recruitment" = "recruitment_adjusted"
+        ),
+        selected = "recruitment_adjusted"
+      )
+    })
+
+    observe({
+      rv$recruitment_type <- input$recruitment_type
+      rv$recruitment_type
+    })
+
     output$ui_include_trend <- renderUI({
       checkboxInput(
         ns("include_trend"),
@@ -363,16 +383,22 @@ mod_recruitment_server <- function(id, survival) {
 
     # Results Year Table ------------------------------------------------------
     observeEvent(rv$results,
-      {
-        withProgress(message = "Generating Results", value = 0, {
-          rv$results_table_year <- bboutools::bb_predict_recruitment(
-            rv$results,
-            sex_ratio = rv$calf_female_ratio
-          )
-          rv$results_table_year
-        })
-      },
-      label = "create results summary"
+                 {
+                   withProgress(message = "Generating Results", value = 0, {
+                     if (rv$recruitment_type == "recruitment_adjusted") {
+                       rv$results_table_year <- bboutools::bb_predict_recruitment(
+                         rv$results,
+                         sex_ratio = rv$calf_female_ratio
+                       )
+                     } else if (rv$recruitment_type == "recruitment_cf") {
+                       rv$results_table_year <- bboutools::bb_predict_calf_cow_ratio(
+                         rv$results
+                       )
+                     }
+                     rv$results_table_year
+                   })
+                 },
+                 label = "create results summary"
     )
 
     output$results_table_year <- DT::renderDT({
@@ -407,6 +433,7 @@ mod_recruitment_server <- function(id, survival) {
         glance_tbl <- bboutools::glance(rv$results)
         glance_tbl$AdultFemaleSexRatio <- input$adult_sex_ratio
         glance_tbl$CalfFemaleSexRatio <- rv$calf_female_ratio
+        glance_tbl$RecruitmentType <- rv$recruitment_type
         coef <- bboutools::coef(rv$results)
 
         rv$results_dl_list_year <- list(
@@ -433,7 +460,14 @@ mod_recruitment_server <- function(id, survival) {
       {
         req(rv$results)
         withProgress(message = "Generating Results", value = 0, {
-          rv$results_plot_year <- bboutools::bb_plot_year_recruitment(rv$results)
+          if (rv$recruitment_type == "recruitment_adjusted") {
+            pred <- bboutools::bb_predict_recruitment(rv$results,
+                                                      sex_ratio = rv$calf_female_ratio)
+            rv$results_plot_year <- bboutools::bb_plot_year_recruitment(pred)
+          } else if (rv$recruitment_type == "recruitment_cf") {
+            pred <- bboutools::bb_predict_calf_cow_ratio(rv$results)
+            rv$results_plot_year <- bboutools::bb_plot_year_calf_cow_ratio(pred)
+          }
           rv$results_plot_year
         })
       },
@@ -469,7 +503,14 @@ mod_recruitment_server <- function(id, survival) {
       {
         req(rv$results)
         withProgress(message = "Generating Results", value = 0, {
-          rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(rv$results)
+          if (rv$recruitment_type == "recruitment_adjusted") {
+            pred <- bboutools::bb_predict_recruitment_trend(rv$results,
+                                                      sex_ratio = rv$calf_female_ratio)
+            rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(pred)
+          } else if (rv$recruitment_type == "recruitment_cf") {
+            pred <- bboutools::bb_predict_calf_cow_ratio_trend(rv$results)
+            rv$results_plot_trend <- bboutools::bb_plot_year_trend_calf_cow_ratio(pred)
+          }
           rv$results_plot_trend
         })
       },
@@ -504,17 +545,23 @@ mod_recruitment_server <- function(id, survival) {
     observeEvent(rv$results,
       {
         req(input$include_trend)
+        print(rv$recruitment_type)
         withProgress(message = "Generating Results", value = 0, {
-          rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
-            rv$results,
-            sex_ratio = rv$calf_female_ratio
-          )
+          if (rv$recruitment_type == "recruitment_adjusted") {
+            rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
+              rv$results,
+              sex_ratio = rv$calf_female_ratio
+            )
+          } else if (rv$recruitment_type == "recruitment_cf") {
+            rv$results_table_trend <- bboutools::bb_predict_calf_cow_ratio_trend(
+              rv$results
+            )
+          }
           rv$results_table_trend
         })
       },
       label = "create results summary"
     )
-
 
     output$results_table_trend <- DT::renderDT({
       req(rv$results_table_trend)
@@ -548,6 +595,7 @@ mod_recruitment_server <- function(id, survival) {
         glance_tbl <- bboutools::glance(rv$results)
         glance_tbl$AdultFemaleSexRatio <- input$adult_sex_ratio
         glance_tbl$CalfFemaleSexRatio <- rv$calf_female_ratio
+        glance_tbl$RecruitmentType <- rv$recruitment_type
         coef <- bboutools::coef(rv$results)
 
         rv$results_dl_list_trend <- list(
@@ -644,6 +692,19 @@ mod_recruitment_server <- function(id, survival) {
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when include trend is clicked"
+    )
+
+    observeEvent(input$recruitment_type,
+                 {
+                   rv$results <- NULL
+                   rv$results_plot_year <- NULL
+                   rv$results_table_year <- NULL
+                   rv$results_dl_list_year <- NULL
+                   rv$results_plot_trend <- NULL
+                   rv$results_table_trend <- NULL
+                   rv$results_dl_list_trend <- NULL
+                 },
+                 label = "clears results when recruitment type changed"
     )
 
     return(rv)
