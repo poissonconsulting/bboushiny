@@ -409,13 +409,11 @@ mod_recruitment_server <- function(id, survival) {
     output$results_table_year <- DT::renderDT({
       req(rv$results_table)
       req(rv$results_table_ccr)
-      print(rv$results_table_ccr)
       if(rv$recruitment_type == "recruitment_adjusted"){
         x <- rv$results_table
       } else {
         x <- rv$results_table_ccr
       }
-      print(x)
       DT::formatRound(
         DT_options(
           x
