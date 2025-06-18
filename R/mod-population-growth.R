@@ -118,7 +118,7 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       req(recruitment$results)
       DT::formatRound(
         DT_options(
-          recruitment$results_table_year
+          recruitment$results_table
         ),
         columns = c("estimate", "lower", "upper"),
         digits = 3
@@ -142,16 +142,19 @@ mod_population_growth_server <- function(id, survival, recruitment) {
 
       req(survival$results)
       req(recruitment$results)
+      req(recruitment$calf_female_ratio)
 
       withProgress(message = "Generating results", value = 0, {
         rv$results_growth <- bboutools::bb_predict_growth(
           survival$results,
-          recruitment$results
+          recruitment$results,
+          sex_ratio = recruitment$calf_female_ratio
         )
 
         rv$results_pop_change <- bboutools::bb_predict_population_change(
           survival$results,
-          recruitment$results
+          recruitment$results,
+          sex_ratio = recruitment$calf_female_ratio
         )
       })
     })

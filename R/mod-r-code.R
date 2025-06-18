@@ -305,17 +305,25 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
 
       l3 <- " "
 
-      l4 <- paste0("bb_predict_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
-
-      l5 <- "bb_plot_year_recruitment(fit_recruitment)"
+      if (recruitment$recruitment_type == "recruitment_adjusted") {
+        l4 <- paste0("bb_predict_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
+        l5 <- paste0("bb_plot_year_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
+      } else {
+        l4 <- "bb_predict_calf_cow_ratio(fit_recruitment)"
+        l5 <- "bb_plot_year_calf_cow_ratio(fit_recruitment)"
+      }
 
       l6 <- " "
 
       if (recruitment$include_trend) {
-        l7 <- paste0(
-          "bb_predict_recruitment_trend(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")",
-          "<br/>bb_plot_year_trend_recruitment(fit_recruitment)"
-        )
+        if (recruitment$recruitment_type == "recruitment_adjusted") {
+          l7 <- paste0(
+            "bb_predict_recruitment_trend(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")",
+            "<br/>bb_plot_year_trend_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")"
+          )
+        } else {
+          l7 <- "bb_predict_calf_cow_ratio_trend(fit_recruitment)<br/>bb_plot_year_trend_calf_cow_ratio(fit_recruitment)"
+        }
       } else {
         l7 <- NULL
       }
@@ -328,13 +336,13 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     output$population_growth <- renderUI({
       req(population_growth$results_pop_change)
 
-      l1 <- "lambda <- bb_predict_growth(fit_survival, fit_recruitment)"
+      l1 <- paste0("lambda <- bb_predict_growth(fit_survival, fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
 
       l2 <- "bb_plot_year_growth(lambda)"
 
       l3 <- " "
 
-      l4 <- "pop_change <- bb_predict_population_change(fit_survival, fit_recruitment)<br/>"
+      l4 <- paste0("pop_change <- bb_predict_population_change(fit_survival, fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")<br/>")
 
       l5 <- "bb_plot_year_population_change(pop_change)"
 

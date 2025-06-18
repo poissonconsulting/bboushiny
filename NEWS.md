@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# bboushiny 0.2.2
+
+- Added option to select recruitment reporting method (adjusted recruitment or calves per adult female)
+- Added clarification on this in help file. 
+
 # bboushiny 0.2.1
 
 - On the Survival tab the Data Plot now filters out missing data instead of throwing an error and not rendering the plot. 
