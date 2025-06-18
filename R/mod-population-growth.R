@@ -118,7 +118,7 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       req(recruitment$results)
       DT::formatRound(
         DT_options(
-          recruitment$results_table_year
+          recruitment$results_table
         ),
         columns = c("estimate", "lower", "upper"),
         digits = 3
