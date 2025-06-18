@@ -111,7 +111,13 @@ mod_recruitment_server <- function(id, survival) {
       data_filtered = NULL,
       results = NULL,
       results_plot = NULL,
+      results_plot_ccr = NULL,
+      results_plot_trend = NULL,
+      results_plot_trend_ccr = NULL,
       results_table = NULL,
+      results_table_ccr = NULL,
+      results_table_trend = NULL,
+      results_table_trend_ccr = NULL,
       adult_sex_ratio = NULL,
       calf_female_ratio = NULL,
       recruitment_type = NULL,
@@ -385,27 +391,34 @@ mod_recruitment_server <- function(id, survival) {
     observeEvent(rv$results,
                  {
                    withProgress(message = "Generating Results", value = 0, {
-                     if (rv$recruitment_type == "recruitment_adjusted") {
-                       rv$results_table_year <- bboutools::bb_predict_recruitment(
-                         rv$results,
-                         sex_ratio = rv$calf_female_ratio
-                       )
-                     } else if (rv$recruitment_type == "recruitment_cf") {
-                       rv$results_table_year <- bboutools::bb_predict_calf_cow_ratio(
-                         rv$results
-                       )
-                     }
-                     rv$results_table_year
+
+                     rv$results_table <- bboutools::bb_predict_recruitment(
+                       rv$results,
+                       sex_ratio = rv$calf_female_ratio
+                     )
+
+                     rv$results_table_ccr <- bboutools::bb_predict_calf_cow_ratio(
+                       rv$results
+                     )
+
                    })
                  },
                  label = "create results summary"
     )
 
     output$results_table_year <- DT::renderDT({
-      req(rv$results_table_year)
+      req(rv$results_table)
+      req(rv$results_table_ccr)
+      print(rv$results_table_ccr)
+      if(rv$recruitment_type == "recruitment_adjusted"){
+        x <- rv$results_table
+      } else {
+        x <- rv$results_table_ccr
+      }
+      print(x)
       DT::formatRound(
         DT_options(
-          rv$results_table_year
+          x
         ),
         columns = c("estimate", "lower", "upper"),
         digits = 3
@@ -413,7 +426,8 @@ mod_recruitment_server <- function(id, survival) {
     })
 
     output$ui_results_table_year <- renderUI({
-      req(rv$results_table_year)
+      req(rv$results_table)
+      req(rv$results_table_ccr)
       DT::DTOutput(ns("results_table_year"))
     })
 
@@ -428,7 +442,7 @@ mod_recruitment_server <- function(id, survival) {
 
     observe(
       {
-        req(rv$results_table_year)
+        req(rv$results_table)
 
         glance_tbl <- bboutools::glance(rv$results)
         glance_tbl$AdultFemaleSexRatio <- input$adult_sex_ratio
@@ -436,9 +450,15 @@ mod_recruitment_server <- function(id, survival) {
         glance_tbl$RecruitmentType <- rv$recruitment_type
         coef <- bboutools::coef(rv$results)
 
+        if(rv$recruitment_type == "recruitment_adjusted") {
+          pred_results_table <- rv$results_table
+        } else {
+          pred_results_table <- rv$results_table_ccr
+        }
+
         rv$results_dl_list_year <- list(
           data_recruitment = rv$data_filtered,
-          predict_recruitment = rv$results_table_year,
+          predict_recruitment = pred_results_table,
           glance_recruitment = glance_tbl,
           coef_recruitment = coef
         )
@@ -458,15 +478,13 @@ mod_recruitment_server <- function(id, survival) {
     # Results Year Plot -------------------------------------------------------
     output$results_plot_year <- renderPlot(
       {
-        req(rv$results)
+        req(rv$results_table)
+        req(rv$results_table_ccr)
         withProgress(message = "Generating Results", value = 0, {
           if (rv$recruitment_type == "recruitment_adjusted") {
-            pred <- bboutools::bb_predict_recruitment(rv$results,
-                                                      sex_ratio = rv$calf_female_ratio)
-            rv$results_plot_year <- bboutools::bb_plot_year_recruitment(pred)
+            rv$results_plot_year <- bboutools::bb_plot_year_recruitment(rv$results_table)
           } else if (rv$recruitment_type == "recruitment_cf") {
-            pred <- bboutools::bb_predict_calf_cow_ratio(rv$results)
-            rv$results_plot_year <- bboutools::bb_plot_year_calf_cow_ratio(pred)
+            rv$results_plot_year <- bboutools::bb_plot_year_calf_cow_ratio(rv$results_table_ccr)
           }
           rv$results_plot_year
         })
@@ -501,15 +519,13 @@ mod_recruitment_server <- function(id, survival) {
     # Results Trend Plot ------------------------------------------------------
     output$results_plot_trend <- renderPlot(
       {
-        req(rv$results)
+        req(rv$results_table)
+        req(rv$results_table_ccr)
         withProgress(message = "Generating Results", value = 0, {
           if (rv$recruitment_type == "recruitment_adjusted") {
-            pred <- bboutools::bb_predict_recruitment_trend(rv$results,
-                                                      sex_ratio = rv$calf_female_ratio)
-            rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(pred)
+            rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(rv$results_table_trend)
           } else if (rv$recruitment_type == "recruitment_cf") {
-            pred <- bboutools::bb_predict_calf_cow_ratio_trend(rv$results)
-            rv$results_plot_trend <- bboutools::bb_plot_year_trend_calf_cow_ratio(pred)
+            rv$results_plot_trend <- bboutools::bb_plot_year_trend_calf_cow_ratio(rv$results_table_trend_ccr)
           }
           rv$results_plot_trend
         })
@@ -545,19 +561,15 @@ mod_recruitment_server <- function(id, survival) {
     observeEvent(rv$results,
       {
         req(input$include_trend)
-        print(rv$recruitment_type)
         withProgress(message = "Generating Results", value = 0, {
-          if (rv$recruitment_type == "recruitment_adjusted") {
-            rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
-              rv$results,
-              sex_ratio = rv$calf_female_ratio
-            )
-          } else if (rv$recruitment_type == "recruitment_cf") {
-            rv$results_table_trend <- bboutools::bb_predict_calf_cow_ratio_trend(
-              rv$results
-            )
-          }
-          rv$results_table_trend
+
+          rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
+            rv$results,
+            sex_ratio = rv$calf_female_ratio
+          )
+          rv$results_table_trend_ccr <- bboutools::bb_predict_calf_cow_ratio_trend(
+            rv$results
+          )
         })
       },
       label = "create results summary"
@@ -565,9 +577,15 @@ mod_recruitment_server <- function(id, survival) {
 
     output$results_table_trend <- DT::renderDT({
       req(rv$results_table_trend)
+      req(rv$results_table_trend_ccr)
+      if (rv$recruitment_type == "recruitment_adjusted") {
+        x <- rv$results_table_trend
+      } else {
+        x <- rv$results_table_trend_ccr
+      }
       DT::formatRound(
         DT_options(
-          rv$results_table_trend
+          x
         ),
         columns = c("estimate", "lower", "upper"),
         digits = 3
@@ -576,6 +594,7 @@ mod_recruitment_server <- function(id, survival) {
 
     output$ui_results_table_trend <- renderUI({
       req(rv$results_table_trend)
+      req(rv$results_table_trend_ccr)
       DT::DTOutput(ns("results_table_trend"))
     })
 
@@ -591,6 +610,7 @@ mod_recruitment_server <- function(id, survival) {
     observe(
       {
         req(rv$results_table_trend)
+        req(rv$results_table_trend_ccr)
 
         glance_tbl <- bboutools::glance(rv$results)
         glance_tbl$AdultFemaleSexRatio <- input$adult_sex_ratio
@@ -598,9 +618,14 @@ mod_recruitment_server <- function(id, survival) {
         glance_tbl$RecruitmentType <- rv$recruitment_type
         coef <- bboutools::coef(rv$results)
 
+        if(rv$recruitment_type == "recruitment_adjusted") {
+          pred_rec <- rv$results_table_trend
+        } else {
+          pred_rec <- rv$results_table_trend_ccr
+        }
         rv$results_dl_list_trend <- list(
           data_recruitment = rv$data_filtered,
-          predict_recruitment = rv$results_table_trend,
+          predict_recruitment = pred_rec,
           glance_recruitment = glance_tbl,
           coef_recruitment = coef
         )
@@ -618,12 +643,15 @@ mod_recruitment_server <- function(id, survival) {
     # Clean Up ----------------------------------------------------------------
     observeEvent(input$upload,
       {
-        rv$results <- NULL
-        rv$results_plot_year <- NULL
-        rv$results_table_year <- NULL
-        rv$results_dl_list_year <- NULL
-        rv$results_plot_trend <- NULL
-        rv$results_table_trend <- NULL
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new file uploaded"
@@ -631,12 +659,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$select_population,
       {
-        rv$results <- NULL
-        rv$results_plot_year <- NULL
-        rv$results_table_year <- NULL
-        rv$results_dl_list_year <- NULL
-        rv$results_plot_trend <- NULL
-        rv$results_table_trend <- NULL
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new population selected"
@@ -644,12 +675,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$adult_sex_ratio,
       {
-        rv$results <- NULL
-        rv$results_plot_year <- NULL
-        rv$results_table_year <- NULL
-        rv$results_dl_list_year <- NULL
-        rv$results_plot_trend <- NULL
-        rv$results_table_trend <- NULL
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new adult female ratio selected"
@@ -657,12 +691,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$calf_female_ratio,
       {
-        rv$results <- NULL
-        rv$results_plot_year <- NULL
-        rv$results_table_year <- NULL
-        rv$results_dl_list_year <- NULL
-        rv$results_plot_trend <- NULL
-        rv$results_table_trend <- NULL
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new yearling female ratio selected"
@@ -670,12 +707,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(survival$start_month,
       {
-        rv$results <- NULL
-        rv$results_plot_year <- NULL
-        rv$results_table_year <- NULL
-        rv$results_dl_list_year <- NULL
-        rv$results_plot_trend <- NULL
-        rv$results_table_trend <- NULL
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when start month selected in the survival tab"
@@ -683,28 +723,18 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$include_trend,
       {
-        rv$results <- NULL
-        rv$results_plot_year <- NULL
-        rv$results_table_year <- NULL
-        rv$results_dl_list_year <- NULL
-        rv$results_plot_trend <- NULL
-        rv$results_table_trend <- NULL
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when include trend is clicked"
-    )
-
-    observeEvent(input$recruitment_type,
-                 {
-                   rv$results <- NULL
-                   rv$results_plot_year <- NULL
-                   rv$results_table_year <- NULL
-                   rv$results_dl_list_year <- NULL
-                   rv$results_plot_trend <- NULL
-                   rv$results_table_trend <- NULL
-                   rv$results_dl_list_trend <- NULL
-                 },
-                 label = "clears results when recruitment type changed"
     )
 
     return(rv)
