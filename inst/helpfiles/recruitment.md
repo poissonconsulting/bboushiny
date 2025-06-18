@@ -120,8 +120,6 @@ The adjusted recruitment (**R<sub>Δ</sub>**) is calculated from the calves per 
   
 where  **R<sub>F</sub>** is the female calves per adult female.
 
-If the reporting method is changed after the results are run, the results will be cleared.
-
 Note that regardless of reporting method selected in the Recruitment tab, the adjusted recruitment (**R<sub>Δ</sub>**) is always used to calculate population growth (lambda). 
 
 #### Include Year Trend
