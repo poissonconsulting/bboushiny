@@ -118,7 +118,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
 
       if (survival$data_type == "demo") {
         l1 <- ""
-        l2 <- paste0("data_survival <- bbousurv_a")
+        l2 <- paste0("data_survival <- bbousurv_multi")
         rv$bboudata_survival <- TRUE
       }
 
@@ -128,7 +128,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     })
 
     output$survival_select_pop <- renderUI({
-      if (survival$data_type == "upload") {
+      if (survival$data_type == "upload" && survival$select_population != "All") {
         l1 <- paste0(
           "data_survival <- data_survival[data_survival$PopulationName == '",
           survival$select_population,
@@ -162,6 +162,22 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
 
         l5 <- paste0("&nbsp year_start = ", survival$start_month_num, ",")
 
+        if (!is.null(survival$allow_missing) && survival$allow_missing) {
+          l5b <- "&nbsp allow_missing = TRUE,"
+        } else {
+          l5b <- NULL
+        }
+
+        if (!is.null(survival$anthro) && !is.na(survival$anthro) &&
+            !is.null(survival$fire_excl_anthro) && !is.na(survival$fire_excl_anthro)) {
+          l5c <- paste0(
+            "&nbsp priors = bb_priors_survival_national(",
+            survival$anthro, ", ", survival$fire_excl_anthro, "),"
+          )
+        } else {
+          l5c <- NULL
+        }
+
         l6 <- paste0(
           "&nbsp nthin = ",
           survival$results_dl_list_year$glance_survival$nthin
@@ -171,7 +187,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       }
 
       if (survival$model) {
-        text <- paste(l0, l1, l2, l3, l4, l5, l6, l7, sep = "<br/>")
+        text <- paste(l0, l1, l2, l3, l4, l5, l5b, l5c, l6, l7, sep = "<br/>")
         text <- gsub("(<br/>){2,}", "<br/>", text)
         HTML(text)
       }
@@ -225,7 +241,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
 
       if (recruitment$data_type == "demo") {
         l1 <- ""
-        l2 <- paste0("data_recruitment <- bbourecruit_a")
+        l2 <- paste0("data_recruitment <- bbourecruit_multi")
         rv$bboudata_recruitment <- TRUE
       }
 
@@ -235,7 +251,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     })
 
     output$recruitment_select_pop <- renderUI({
-      if (recruitment$data_type == "upload") {
+      if (recruitment$data_type == "upload" && recruitment$select_population != "All") {
         l1 <- paste0(
           "data_recruitment <- data_recruitment[data_recruitment$PopulationName == '",
           recruitment$select_population,
@@ -279,6 +295,22 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
 
         l6 <- paste0("&nbsp year_start = ", survival$start_month_num, ",")
 
+        if (!is.null(recruitment$allow_missing) && recruitment$allow_missing) {
+          l6b <- "&nbsp allow_missing = TRUE,"
+        } else {
+          l6b <- NULL
+        }
+
+        if (!is.null(recruitment$anthro) && !is.na(recruitment$anthro) &&
+            !is.null(recruitment$fire_excl_anthro) && !is.na(recruitment$fire_excl_anthro)) {
+          l6c <- paste0(
+            "&nbsp priors = bb_priors_recruitment_national(",
+            recruitment$anthro, ", ", recruitment$fire_excl_anthro, "),"
+          )
+        } else {
+          l6c <- NULL
+        }
+
         l7 <- paste0(
           "&nbsp nthin = ",
           recruitment$results_dl_list_year$glance_recruitment$nthin
@@ -288,7 +320,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       }
 
       if (recruitment$model) {
-        text <- paste(l0, l1, l2, l3, l4, l5, l6, l7, l8, sep = "<br/>")
+        text <- paste(l0, l1, l2, l3, l4, l5, l6, l6b, l6c, l7, l8, sep = "<br/>")
         text <- gsub("(<br/>){2,}", "<br/>", text)
         HTML(text)
       }
@@ -306,8 +338,8 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       l3 <- " "
 
       if (recruitment$recruitment_type == "recruitment_adjusted") {
-        l4 <- paste0("bb_predict_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
-        l5 <- paste0("bb_plot_year_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
+        l4 <- "bb_predict_recruitment(fit_recruitment)"
+        l5 <- "bb_plot_year_recruitment(fit_recruitment)"
       } else {
         l4 <- "bb_predict_calf_cow_ratio(fit_recruitment)"
         l5 <- "bb_plot_year_calf_cow_ratio(fit_recruitment)"
@@ -318,8 +350,8 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       if (recruitment$include_trend) {
         if (recruitment$recruitment_type == "recruitment_adjusted") {
           l7 <- paste0(
-            "bb_predict_recruitment_trend(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")",
-            "<br/>bb_plot_year_trend_recruitment(fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")"
+            "bb_predict_recruitment_trend(fit_recruitment)",
+            "<br/>bb_plot_year_trend_recruitment(fit_recruitment)"
           )
         } else {
           l7 <- "bb_predict_calf_cow_ratio_trend(fit_recruitment)<br/>bb_plot_year_trend_calf_cow_ratio(fit_recruitment)"
@@ -336,13 +368,13 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     output$population_growth <- renderUI({
       req(population_growth$results_pop_change)
 
-      l1 <- paste0("lambda <- bb_predict_growth(fit_survival, fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")")
+      l1 <- "lambda <- bb_predict_growth(fit_survival, fit_recruitment)"
 
       l2 <- "bb_plot_year_growth(lambda)"
 
       l3 <- " "
 
-      l4 <- paste0("pop_change <- bb_predict_population_change(fit_survival, fit_recruitment, sex_ratio = ", recruitment$calf_female_ratio, ")<br/>")
+      l4 <- "pop_change <- bb_predict_population_change(fit_survival, fit_recruitment)<br/>"
 
       l5 <- "bb_plot_year_population_change(pop_change)"
 

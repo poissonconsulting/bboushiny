@@ -49,7 +49,7 @@ plot_survival_data <- function(data) {
       y = .data$Count,
       fill = .data$name
     )) +
-    facet_wrap(~CaribouYear) +
+    facet_wrap(~PopulationName + CaribouYear) +
     theme_bw() +
     scale_y_continuous(
       breaks = scales::breaks_pretty(),
@@ -117,7 +117,7 @@ plot_recruitment_data <- function(data) {
       ),
       position = "dodge"
     ) +
-    facet_wrap(~ .data$CaribouYear, scales = "free_x") +
+    facet_wrap(~ .data$PopulationName + .data$CaribouYear, scales = "free_x") +
     scale_y_continuous(
       breaks = c(0, 40, 80, 120),
     ) +
@@ -216,13 +216,17 @@ catch_output_and_messages <- function(expr) {
       withCallingHandlers(
         expr = expr,
         message = function(m) {
-          msgs <<- c(msgs, gsub("\n", "", m[[1]]))
+          msg <- gsub("\n", "", m[[1]])
+          msg <- cli::ansi_strip(msg)
+          msgs <<- c(msgs, msg)
           msgs
         }
       )
     },
     error = err
   )
+  msgs <- msgs[!grepl("^Registered S3 method", msgs)]
+  if (length(msgs) == 0) msgs <- NULL
   return(list(result = res, messages = msgs))
 }
 
@@ -328,7 +332,9 @@ check_data_month <- function(data) {
 
 fit_recruitment_estimate <- function(data, adult_female_ratio,
                                      calf_female_ratio, year_trend,
-                                     year_start, nthin) {
+                                     year_start, nthin,
+                                     priors = NULL,
+                                     allow_missing = FALSE) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
 
@@ -341,7 +347,9 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
         adult_female_proportion = adult_female_ratio,
         sex_ratio = calf_female_ratio,
         year_trend = year_trend,
-        year_start = year_start
+        year_start = year_start,
+        priors = priors,
+        allow_missing = allow_missing
       )
     )
 
@@ -373,7 +381,9 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
 }
 
 fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
-                                  year_start, nthin) {
+                                  year_start, nthin,
+                                  priors = NULL,
+                                  allow_missing = FALSE) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
 
@@ -385,7 +395,9 @@ fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
         year_trend = year_trend,
         include_uncertain_morts = include_uncertain_morts,
         year_start = year_start,
-        nthin = n
+        nthin = n,
+        priors = priors,
+        allow_missing = allow_missing
       )
     )
 

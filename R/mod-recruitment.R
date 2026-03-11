@@ -40,7 +40,12 @@ mod_recruitment_ui <- function(id, label = "recruitment") {
     uiOutput(ns("ui_recruitment_type")),
     tags$label("7. Include Year Trend"),
     uiOutput(ns("ui_include_trend")),
-    tags$label("8. Run Model"), br(),
+    tags$label("8. Allow Unobserved Years"),
+    uiOutput(ns("ui_allow_missing")),
+    tags$label("9. National Disturbance Priors (optional)"),
+    uiOutput(ns("ui_anthro")),
+    uiOutput(ns("ui_fire_excl_anthro")),
+    tags$label("10. Run Model"), br(),
     actionButton(
       ns("est_recruitment"),
       "Estimate Recruitment",
@@ -220,7 +225,7 @@ mod_recruitment_server <- function(id, survival) {
     })
 
     observeEvent(input$demo_recruitment, {
-      data <- bboudata::bbourecruit_a
+      data <- bboudata::bbourecruit_multi
       rv$population_choices <- sort(unique(data[["PopulationName"]]))
       rv$data <- data
       rv$data_type <- "demo" # for code tab
@@ -230,7 +235,7 @@ mod_recruitment_server <- function(id, survival) {
       selectInput(
         ns("select_population"),
         label = NULL,
-        choices = rv$population_choices
+        choices = c("All", rv$population_choices)
       )
     })
 
@@ -238,9 +243,13 @@ mod_recruitment_server <- function(id, survival) {
       req(input$select_population)
       rv$select_population <- input$select_population
 
-      rv$data_filtered <-
-        rv$data |>
-        dplyr::filter(.data$PopulationName == input$select_population)
+      if (input$select_population == "All") {
+        rv$data_filtered <- rv$data
+      } else {
+        rv$data_filtered <-
+          rv$data |>
+          dplyr::filter(.data$PopulationName == input$select_population)
+      }
     })
 
     output$data_table <- DT::renderDT(DT_options(rv$data_filtered))
@@ -320,6 +329,36 @@ mod_recruitment_server <- function(id, survival) {
       )
     })
 
+    output$ui_allow_missing <- renderUI({
+      checkboxInput(
+        ns("allow_missing"),
+        label = "Yes",
+        value = FALSE
+      )
+    })
+
+    output$ui_anthro <- renderUI({
+      numericInput(
+        ns("anthro"),
+        label = "% Anthropogenic Disturbance",
+        value = NA,
+        min = 0,
+        max = 100,
+        step = 1
+      )
+    })
+
+    output$ui_fire_excl_anthro <- renderUI({
+      numericInput(
+        ns("fire_excl_anthro"),
+        label = "% Fire Excluding Anthropogenic",
+        value = NA,
+        min = 0,
+        max = 100,
+        step = 1
+      )
+    })
+
     output$ui_start_month <- renderText({
       paste("<b>2. Start Month of Caribou Year:</b>", survival$start_month)
     })
@@ -328,6 +367,9 @@ mod_recruitment_server <- function(id, survival) {
       # for code tab
       rv$model <- TRUE
       rv$include_trend <- input$include_trend
+      rv$allow_missing <- input$allow_missing
+      rv$anthro <- input$anthro
+      rv$fire_excl_anthro <- input$fire_excl_anthro
 
       # check data is present
       if (is.null(rv$data_filtered)) {
@@ -348,6 +390,19 @@ mod_recruitment_server <- function(id, survival) {
         )
       }
 
+      # validate national priors
+      anthro <- input$anthro
+      fire_excl_anthro <- input$fire_excl_anthro
+      priors <- NULL
+      if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
+        if (anthro + fire_excl_anthro > 100) {
+          return(modal_error_modal(
+            "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100."
+          ))
+        }
+        priors <- bboutools::bb_priors_recruitment_national(anthro, fire_excl_anthro)
+      }
+
       withProgress(
         message = "Running model...",
         value = 0,
@@ -358,7 +413,9 @@ mod_recruitment_server <- function(id, survival) {
             calf_female_ratio = rv$calf_female_ratio,
             year_trend = input$include_trend,
             year_start = survival$start_month_num,
-            nthin = c(10, 50, 100, 500)
+            nthin = c(10, 50, 100, 500),
+            priors = priors,
+            allow_missing = input$allow_missing
           )
 
           if (!is.null(fit[[1]]) & !is.null(fit[[2]])) {
@@ -393,8 +450,7 @@ mod_recruitment_server <- function(id, survival) {
                    withProgress(message = "Generating Results", value = 0, {
 
                      rv$results_table <- bboutools::bb_predict_recruitment(
-                       rv$results,
-                       sex_ratio = rv$calf_female_ratio
+                       rv$results
                      )
 
                      rv$results_table_ccr <- bboutools::bb_predict_calf_cow_ratio(
@@ -562,8 +618,7 @@ mod_recruitment_server <- function(id, survival) {
         withProgress(message = "Generating Results", value = 0, {
 
           rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
-            rv$results,
-            sex_ratio = rv$calf_female_ratio
+            rv$results
           )
           rv$results_table_trend_ccr <- bboutools::bb_predict_calf_cow_ratio_trend(
             rv$results
@@ -733,6 +788,54 @@ mod_recruitment_server <- function(id, survival) {
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when include trend is clicked"
+    )
+
+    observeEvent(input$allow_missing,
+      {
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
+        rv$results_dl_list_trend <- NULL
+      },
+      label = "clears results when allow missing changed"
+    )
+
+    observeEvent(input$anthro,
+      {
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
+        rv$results_dl_list_trend <- NULL
+      },
+      label = "clears results when anthro disturbance changed"
+    )
+
+    observeEvent(input$fire_excl_anthro,
+      {
+        rv$results = NULL
+        rv$results_plot = NULL
+        rv$results_plot_ccr = NULL
+        rv$results_plot_trend = NULL
+        rv$results_plot_trend_ccr = NULL
+        rv$results_table = NULL
+        rv$results_table_ccr = NULL
+        rv$results_table_trend = NULL
+        rv$results_table_trend_ccr = NULL
+        rv$results_dl_list_trend <- NULL
+      },
+      label = "clears results when fire disturbance changed"
     )
 
     return(rv)
