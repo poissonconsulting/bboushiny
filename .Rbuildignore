@@ -13,3 +13,5 @@
 ^codecov\.yml$
 ^_pkgdown\.yml$
 ^pkgdown$
+^test-app$
+claude.md
