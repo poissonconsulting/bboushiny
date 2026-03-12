@@ -393,7 +393,12 @@ mod_recruitment_server <- function(id, survival) {
       anthro <- input$anthro
       fire_excl_anthro <- input$fire_excl_anthro
       priors <- NULL
-      if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
+      if (xor(is.na(anthro), is.na(fire_excl_anthro))) {
+        toast_warning(
+          "Both % Anthropogenic Disturbance and % Fire Excluding Anthropogenic must be set to use national priors. Using default priors.",
+          title = "National priors not applied"
+        )
+      } else if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
         if (anthro + fire_excl_anthro > 100) {
           return(toast_error(
             "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100.",
@@ -570,6 +575,7 @@ mod_recruitment_server <- function(id, survival) {
       {
         req(rv$results_table)
         req(rv$results_table_ccr)
+        req(input$include_trend)
         withProgress(message = "Generating Results", value = 0, {
           if (rv$recruitment_type == "recruitment_adjusted") {
             rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(rv$results_table_trend)
@@ -584,11 +590,13 @@ mod_recruitment_server <- function(id, survival) {
 
     output$ui_results_plot_trend <- renderUI({
       req(rv$results)
+      req(input$include_trend)
       plotOutput(ns("results_plot_trend"))
     })
 
     output$download_results_plot_trend_button <- renderUI({
       req(rv$results)
+      req(input$include_trend)
       downloadButton(ns("download_results_plot_trend"), "PNG", class = "btn-results")
     })
 

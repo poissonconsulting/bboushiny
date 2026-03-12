@@ -76,6 +76,7 @@ plot_survival_data <- function(data) {
 }
 
 plot_recruitment_data <- function(data) {
+  data <- data[!is.na(data$Month), ]
   data$Date <- paste(data$Year, data$Month, data$Day, sep = "-")
 
   data_count <- data |>
@@ -83,10 +84,11 @@ plot_recruitment_data <- function(data) {
       -"Bulls", -"UnknownAdults", -"Yearlings", -"Year",
       -"Month", -"Day"
     ) |>
-    dplyr::group_by(.data$Date) |>
+    dplyr::group_by(.data$PopulationName, .data$Date) |>
     dplyr::summarise(
       Cows = sum(.data$Cows),
-      Calves = sum(.data$Calves)
+      Calves = sum(.data$Calves),
+      .groups = "drop"
     ) |>
     tidyr::pivot_longer(cols = c("Cows", "Calves"), values_to = "Count")
 
@@ -97,12 +99,12 @@ plot_recruitment_data <- function(data) {
 
   data <- data |>
     dplyr::select(
-      "Date", "Month", "Day", "CaribouYear", "CaribouMonth"
+      "PopulationName", "Date", "Month", "Day", "CaribouYear", "CaribouMonth"
     ) |>
     dplyr::distinct()
 
   data_count <- data_count |>
-    dplyr::left_join(data, by = c("Date")) |>
+    dplyr::left_join(data, by = c("PopulationName", "Date")) |>
     dplyr::arrange(.data$CaribouYear, .data$CaribouMonth, .data$Day) |>
     dplyr::mutate(
       plot_order = seq_len(dplyr::n())

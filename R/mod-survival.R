@@ -376,7 +376,12 @@ mod_survival_server <- function(id) {
       anthro <- input$anthro
       fire_excl_anthro <- input$fire_excl_anthro
       priors <- NULL
-      if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
+      if (xor(is.na(anthro), is.na(fire_excl_anthro))) {
+        toast_warning(
+          "Both % Anthropogenic Disturbance and % Fire Excluding Anthropogenic must be set to use national priors. Using default priors.",
+          title = "National priors not applied"
+        )
+      } else if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
         if (anthro + fire_excl_anthro > 100) {
           return(toast_error(
             "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100.",
@@ -480,6 +485,11 @@ mod_survival_server <- function(id) {
     # Results Table Month -----------------------------------------------------
     observeEvent(rv$results,
       {
+        # monthly predictions not available for annual survival data
+        if (length(levels(bboutools::augment(rv$results)$Month)) == 1L) {
+          rv$results_table_month <- NULL
+          return()
+        }
         withProgress(message = "Generating Results", value = 0, {
           rv$results_table_month <- bboutools::bb_predict_survival(
             rv$results,
@@ -583,6 +593,7 @@ mod_survival_server <- function(id) {
     output$results_plot_month <- renderPlot(
       {
         req(rv$results)
+        req(rv$results_table_month)
         withProgress(message = "Generating Results", value = 0, {
           rv$results_plot_month <- bboutools::bb_plot_month_survival(rv$results)
           rv$results_plot_month
@@ -593,11 +604,13 @@ mod_survival_server <- function(id) {
 
     output$ui_results_plot_month <- renderUI({
       req(rv$results)
+      req(rv$results_table_month)
       plotOutput(ns("results_plot_month"))
     })
 
     output$download_results_plot_button_month <- renderUI({
       req(rv$results)
+      req(rv$results_table_month)
       downloadButton(ns("download_results_plot_month"), "PNG", class = "btn-results")
     })
 
@@ -683,6 +696,7 @@ mod_survival_server <- function(id) {
     output$results_plot_trend <- renderPlot(
       {
         req(rv$results)
+        req(input$include_trend)
 
         withProgress(message = "Generating Results", value = 0, {
           rv$results_plot_trend <- bboutools::bb_plot_year_trend_survival(rv$results)
@@ -694,11 +708,13 @@ mod_survival_server <- function(id) {
 
     output$ui_results_plot_trend <- renderUI({
       req(rv$results)
+      req(input$include_trend)
       plotOutput(ns("results_plot_trend"))
     })
 
     output$download_results_plot_button_trend <- renderUI({
       req(rv$results)
+      req(input$include_trend)
       downloadButton(ns("download_results_plot_trend"), "PNG", class = "btn-results")
     })
 
