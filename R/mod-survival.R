@@ -186,7 +186,8 @@ mod_survival_server <- function(id) {
           silent = TRUE
         )
         if (is_try_error(file_type)) {
-          return(showModal(check_modal(file_type)))
+          return(toast_error(file_type))
+
         }
 
         if (grepl("\\.xlsx", input$upload$datapath)) {
@@ -198,31 +199,31 @@ mod_survival_server <- function(id) {
         # check that there is data (ie upload is not empty)
         num_rows <- try(check_data_not_empty(data), silent = TRUE)
         if (is_try_error(num_rows)) {
-          return(showModal(check_modal(num_rows)))
+          return(toast_error(num_rows))
         }
 
         # check column names
         col_names <- try(check_col_names(template_survival, data), silent = TRUE)
         if (is_try_error(col_names)) {
-          return(showModal(check_modal(col_names)))
+          return(toast_error(col_names))
         }
 
         # check column types
         data <- try(check_survival_col_types(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         # check year values
         data <- try(check_data_year(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         # check month values
         data <- try(check_data_month(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         rv$population_choices <- sort(unique(data[["PopulationName"]]))
@@ -368,7 +369,7 @@ mod_survival_server <- function(id) {
 
       # check data is present
       if (is.null(rv$data_filtered)) {
-        return(modal_missing_data())
+        return(toast_missing_data())
       }
 
       # validate national priors
@@ -377,8 +378,9 @@ mod_survival_server <- function(id) {
       priors <- NULL
       if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
         if (anthro + fire_excl_anthro > 100) {
-          return(modal_error_modal(
-            "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100."
+          return(toast_error(
+            "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100.",
+            title = "Invalid input"
           ))
         }
         priors <- bboutools::bb_priors_survival_national(anthro, fire_excl_anthro)
@@ -401,12 +403,7 @@ mod_survival_server <- function(id) {
           )
 
           if (!is.null(fit[[1]]) & !is.null(fit[[2]])) {
-            showModal(
-              modalDialog(
-                paste(fit[[2]], collapse = " "),
-                footer = modalButton("Ok"),
-              )
-            )
+            toast_info(fit[[2]])
           }
         }
       )

@@ -166,7 +166,7 @@ mod_recruitment_server <- function(id, survival) {
           silent = TRUE
         )
         if (is_try_error(file_type)) {
-          return(showModal(check_modal(file_type)))
+          return(toast_error(file_type))
         }
 
         if (grepl("\\.xlsx", input$upload$datapath)) {
@@ -178,31 +178,31 @@ mod_recruitment_server <- function(id, survival) {
         # check that there is data (ie upload is not empty)
         num_rows <- try(check_data_not_empty(data), silent = TRUE)
         if (is_try_error(num_rows)) {
-          return(showModal(check_modal(num_rows)))
+          return(toast_error(num_rows))
         }
 
         # check column names
         col_names <- try(check_col_names(template_recruitment, data), silent = TRUE)
         if (is_try_error(col_names)) {
-          return(showModal(check_modal(col_names)))
+          return(toast_error(col_names))
         }
 
         # check column types
         data <- try(check_recruitment_col_types(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         # check year values
         data <- try(check_data_year(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         # check month values
         data <- try(check_data_month(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         rv$population_choices <- sort(unique(data[["PopulationName"]]))
@@ -373,7 +373,7 @@ mod_recruitment_server <- function(id, survival) {
 
       # check data is present
       if (is.null(rv$data_filtered)) {
-        return(modal_missing_data())
+        return(toast_missing_data())
       }
 
       if (is.na(rv$adult_sex_ratio)) {
@@ -382,10 +382,9 @@ mod_recruitment_server <- function(id, survival) {
 
       if (is.na(rv$calf_female_ratio)) {
         return(
-          modal_error_modal(
-            "The Yearling Female ratio cannot be left blank.
-            Please fill in a value under 5. Choose Sex Ratios in the Yearling Female box.
-            You can select any value between 0 and 1."
+          toast_error(
+            "The Yearling Female ratio cannot be left blank. Please fill in a value under 5. Choose Sex Ratios in the Yearling Female box. You can select any value between 0 and 1.",
+            title = "Invalid input"
           )
         )
       }
@@ -396,8 +395,9 @@ mod_recruitment_server <- function(id, survival) {
       priors <- NULL
       if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
         if (anthro + fire_excl_anthro > 100) {
-          return(modal_error_modal(
-            "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100."
+          return(toast_error(
+            "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100.",
+            title = "Invalid input"
           ))
         }
         priors <- bboutools::bb_priors_recruitment_national(anthro, fire_excl_anthro)
@@ -419,12 +419,7 @@ mod_recruitment_server <- function(id, survival) {
           )
 
           if (!is.null(fit[[1]]) & !is.null(fit[[2]])) {
-            showModal(
-              modalDialog(
-                paste(fit[[2]], collapse = " "),
-                footer = modalButton("Ok"),
-              )
-            )
+            toast_info(fit[[2]])
           }
         }
       )

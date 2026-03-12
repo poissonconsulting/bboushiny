@@ -134,10 +134,22 @@ mod_population_growth_server <- function(id, survival, recruitment) {
     # Calculate Results -------------------------------------------------------
     observeEvent(input$calc_pop_growth, {
       if (is.null(survival$results)) {
-        return(showModal(calculate_modal("Survival")))
+        return(toast_warning(
+          paste(
+            "The survival results are required to calculate Population Growth.",
+            "Go back to the Survival tab to upload data and generate an estimate."
+          ),
+          title = "Missing Survival results"
+        ))
       }
       if (is.null(recruitment$results)) {
-        return(showModal(calculate_modal("Recruitment")))
+        return(toast_warning(
+          paste(
+            "The recruitment results are required to calculate Population Growth.",
+            "Go back to the Recruitment tab to upload data and generate an estimate."
+          ),
+          title = "Missing Recruitment results"
+        ))
       }
 
       req(survival$results)

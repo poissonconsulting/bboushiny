@@ -245,6 +245,17 @@ css_styling <- function() {
   .control-sidebar-slide-open.control-sidebar-push .content-wrapper,.control-sidebar-slide-open.control-sidebar-push .main-footer,.control-sidebar-slide-open.control-sidebar-push-slide .content-wrapper,.control-sidebar-slide-open.control-sidebar-push-slide .main-footer {
     margin-right:220px
   }
+  .bbou-toast.toast {
+    min-width: 350px;
+    font-size: 1rem;
+  }
+  .bbou-toast .toast-body {
+    padding: 1rem;
+  }
+  .bbou-toast .toast-header {
+    padding: 0.75rem 1rem;
+    font-size: 1.05rem;
+  }
   "
   tags$style(x, type = "text/css")
 }

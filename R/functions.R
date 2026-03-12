@@ -162,45 +162,53 @@ DT_options <- function(data) {
 
 #### Display ####
 
-calculate_modal <- function(x) {
-  x <- paste(
-    "The", tolower(x), "results are required to calculate Population Growth.",
-    "Go back to the", x, "tab to upload data and generate an estimate.",
-    "You can check the results have been pulled through if the Estimates
-             box has", x, "populated."
-  )
-  modalDialog(
-    title = "",
-    footer = modalButton(label = "Got it"),
-    tagList(
-      paste(x)
+toast_info <- function(messages) {
+  bs4Dash::toast(
+    title = "Info",
+    body = paste(messages, collapse = "<br>"),
+    options = list(
+      autohide = FALSE,
+      position = "topRight",
+      close = TRUE,
+      class = "bg-info bbou-toast"
     )
   )
 }
 
-check_modal <- function(check, title = "Please fix the following issue ...") {
+toast_error <- function(check, title = "Please fix the following issue") {
   msg <- gsub("^Error [^:]*\\) : \n  ", "", check[1])
   msg <- gsub("Error : ", "", msg)
-  modalDialog(paste(msg),
-    title = title, footer = modalButton("Got it")
-  )
-}
-
-modal_error_modal <- function(msg) {
-  showModal(
-    modalDialog(
-      msg,
-      footer = modalButton("Ok")
+  bs4Dash::toast(
+    title = title,
+    body = paste(msg),
+    options = list(
+      autohide = FALSE,
+      icon = "fas fa-exclamation-triangle",
+      position = "topRight",
+      close = TRUE,
+      class = "bg-danger bbou-toast"
     )
   )
 }
 
-modal_missing_data <- function() {
-  showModal(
-    modalDialog(
-      "Please upload data or use the demo data.",
-      footer = modalButton("Ok")
+toast_warning <- function(msg, title = "Warning") {
+  bs4Dash::toast(
+    title = title,
+    body = msg,
+    options = list(
+      autohide = FALSE,
+      icon = "fas fa-exclamation-circle",
+      position = "topRight",
+      close = TRUE,
+      class = "bg-warning bbou-toast"
     )
+  )
+}
+
+toast_missing_data <- function() {
+  toast_warning(
+    "Please upload data or use the demo data.",
+    title = "Missing data"
   )
 }
 
@@ -218,6 +226,8 @@ catch_output_and_messages <- function(expr) {
         message = function(m) {
           msg <- gsub("\n", "", m[[1]])
           msg <- cli::ansi_strip(msg)
+          msg <- gsub("[\u2139\u26A0\u2716\u2714\u2022\u25CF]\\s*", "", msg)
+          msg <- trimws(msg)
           msgs <<- c(msgs, msg)
           msgs
         }
@@ -354,7 +364,7 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
     )
 
     if (!chk::vld_is(fit[[1]], "bboufit")) {
-      modal_error_modal(fit[[1]])
+      toast_error(fit[[1]], title = "Model error")
       fit <- NULL
       return(fit)
     }
@@ -366,17 +376,15 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
       return(fit)
     }
   }
-  showModal(
-    check_modal(
-      title = "Model did not converge",
-      paste(
-        "The model did not reach convergence after trying several thinning
-        values with the highest value being nthin =", n, ". The data set exceeds
-        the capacity of the default settings in the bboushiny app. Please use
-        the bboutools package to analyse the data. Check out the About tab for
-        more info on the models."
-      )
-    )
+  toast_warning(
+    paste(
+      "The model did not reach convergence after trying several thinning",
+      "values with the highest value being nthin =", n, ". The data set exceeds",
+      "the capacity of the default settings in the bboushiny app. Please use",
+      "the bboutools package to analyse the data. Check out the About tab for",
+      "more info on the models."
+    ),
+    title = "Model did not converge"
   )
 }
 
@@ -402,7 +410,7 @@ fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
     )
 
     if (!chk::vld_is(fit[[1]], "bboufit")) {
-      modal_error_modal(fit[[1]])
+      toast_error(fit[[1]], title = "Model error")
       fit <- NULL
       return(fit)
     }
@@ -414,17 +422,15 @@ fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
       return(fit)
     }
   }
-  showModal(
-    check_modal(
-      title = "Model did not converge",
-      paste(
-        "The model did not reach convergence after trying several thinning
-        values with the highest value being nthin =", n, ". The data set exceeds
-        the capacity of the default settings in the bboushiny app. Please use
-        the bboutools package to analyse the data. Check out the About tab for
-        more info on the models."
-      )
-    )
+  toast_warning(
+    paste(
+      "The model did not reach convergence after trying several thinning",
+      "values with the highest value being nthin =", n, ". The data set exceeds",
+      "the capacity of the default settings in the bboushiny app. Please use",
+      "the bboutools package to analyse the data. Check out the About tab for",
+      "more info on the models."
+    ),
+    title = "Model did not converge"
   )
 }
 
