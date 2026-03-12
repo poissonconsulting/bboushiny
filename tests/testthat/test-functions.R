@@ -52,6 +52,7 @@ test_that("returns result with real example survival and 1 message", {
   withr::with_envvar(
     new = c(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false"),
     {
+      library(bboutools)
       x <- bboudata::bbousurv_a
 
       expect_output(
