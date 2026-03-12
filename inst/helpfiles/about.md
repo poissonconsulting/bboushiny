@@ -17,38 +17,23 @@
 
 ## About the Boreal Caribou Population Growth App
 
-The Ministry of Environment and Climate Change Canada is responsible for
-the recovery and protection of boreal caribou across Canada. This app
-sets out to create a standardized method for analyzing boreal caribou
-survival and recruitment data to estimate population growth.
+Environment and Climate Change Canada is responsible for the recovery and protection of boreal caribou across Canada.
+This app supports that mandate by providing a standardized approach for estimating boreal caribou survival, recruitment and population growth from monitoring data.
 
-The `bboushiny` app makes generating estimates easy by having a streamlined
-design and uses the [bboutools](https://poissonconsulting.github.io/bboutools/) R package under the hood.
-The app uses default values for most model parameters.
-There will be the odd case where the default parameters will not get convergence of the model, in this case the
-app will provide an error message and direct you to the [bboutools](https://poissonconsulting.github.io/bboutools/) package.
-The [bboutools](https://poissonconsulting.github.io/bboutools/) package allows for customization of the models beyond the defaults set in the app.
+The app is built on the [bboutools](https://poissonconsulting.github.io/bboutools/) R package, which fits Bayesian models with sensible default parameters so that users can generate estimates without needing to write R code.
+In cases where the model fails to converge, the app will notify you and recommend using [bboutools](https://poissonconsulting.github.io/bboutools/) directly, which offers full control over model parameters and priors.
 
-### bboutools Documentation
+### Documentation
 
-For full details on the models, methods and features used by this app,
-see the [bboutools](https://poissonconsulting.github.io/bboutools/) package documentation.
+For detailed information on the underlying models, methods and features, see the [bboutools](https://poissonconsulting.github.io/bboutools/) package documentation:
 
-- [Getting Started](https://poissonconsulting.github.io/bboutools/articles/bboutools.html) —
-Overview of data formats, model fitting, and predictions for survival, recruitment and population growth.
+- [Getting Started](https://poissonconsulting.github.io/bboutools/articles/bboutools.html) — An introduction to data formats, model fitting, and generating predictions for survival, recruitment and population growth.
 
-- [Analytical Methods](https://poissonconsulting.github.io/bboutools/articles/methods.html) —
-Detailed model specifications for the survival and recruitment models used by this app,
-including the Bayesian framework, random and fixed effects, and population growth calculations.
+- [Analytical Methods](https://poissonconsulting.github.io/bboutools/articles/methods.html) — Full model specifications for the survival and recruitment models, including the Bayesian framework, random and fixed effects, and population growth calculations.
 
-- [Prior Selection and Influence](https://poissonconsulting.github.io/bboutools/articles/priors.html) —
-Explanation of the default priors and how they influence estimates.
-Covers national disturbance-informed priors, which can be set in the app via the Anthropogenic Disturbance inputs.
+- [Prior Selection and Influence](https://poissonconsulting.github.io/bboutools/articles/priors.html) — An explanation of the default priors and how they influence parameter estimates. This article also covers national disturbance-informed priors, which are available in the app through the Anthropogenic Disturbance inputs.
 
-- [Extensions](https://poissonconsulting.github.io/bboutools/articles/extensions.html) —
-Multi-population analysis, aggregate annual survival data,
-prediction for unobserved years (the "Allow Missing Years" option in the app),
-and prior-only sampling.
+- [Extensions](https://poissonconsulting.github.io/bboutools/articles/extensions.html) — Coverage of multi-population analysis, aggregate annual survival data, prediction for unobserved years (the "Allow Missing Years" option in the app), and prior-only sampling.
 
 ### References
 
@@ -57,5 +42,5 @@ David Hervieux, and Lalenia Neufeld. 2012. "Estimating Ungulate
 Recruitment and Growth Rates Using Age Ratios." The Journal of Wildlife
 Management 76 (1): 144–53. [https://doi.org/10.1002/jwmg.244](https://doi.org/10.1002/jwmg.244)
 
-Hatter, Ian, and Wendy Bergerud. 1991. "Moose Recuriment Adult Mortality
+Hatter, Ian, and Wendy Bergerud. 1991. "Moose Recruitment, Adult Mortality
 and Rate of Change" 27: 65–73.
