@@ -156,15 +156,26 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       req(recruitment$results)
 
       withProgress(message = "Generating results", value = 0, {
-        rv$results_growth <- bboutools::bb_predict_growth(
-          survival$results,
-          recruitment$results
+        growth <- catch_output_and_messages(
+          bboutools::bb_predict_growth(
+            survival$results,
+            recruitment$results
+          )
         )
+        rv$results_growth <- growth$result
 
-        rv$results_pop_change <- bboutools::bb_predict_population_change(
-          survival$results,
-          recruitment$results
+        pop_change <- catch_output_and_messages(
+          bboutools::bb_predict_population_change(
+            survival$results,
+            recruitment$results
+          )
         )
+        rv$results_pop_change <- pop_change$result
+
+        msgs <- unique(c(growth$messages, pop_change$messages))
+        if (!is.null(msgs)) {
+          toast_info(msgs)
+        }
       })
     })
 
