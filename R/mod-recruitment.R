@@ -446,26 +446,24 @@ mod_recruitment_server <- function(id, survival) {
 
     # Results Year Table ------------------------------------------------------
     observeEvent(rv$results,
-                 {
-                   withProgress(message = "Generating Results", value = 0, {
+      {
+        withProgress(message = "Generating Results", value = 0, {
+          rv$results_table <- bboutools::bb_predict_recruitment(
+            rv$results
+          )
 
-                     rv$results_table <- bboutools::bb_predict_recruitment(
-                       rv$results
-                     )
-
-                     rv$results_table_ccr <- bboutools::bb_predict_calf_cow_ratio(
-                       rv$results
-                     )
-
-                   })
-                 },
-                 label = "create results summary"
+          rv$results_table_ccr <- bboutools::bb_predict_calf_cow_ratio(
+            rv$results
+          )
+        })
+      },
+      label = "create results summary"
     )
 
     output$results_table_year <- DT::renderDT({
       req(rv$results_table)
       req(rv$results_table_ccr)
-      if(rv$recruitment_type == "recruitment_adjusted"){
+      if (rv$recruitment_type == "recruitment_adjusted") {
         x <- rv$results_table
       } else {
         x <- rv$results_table_ccr
@@ -504,7 +502,7 @@ mod_recruitment_server <- function(id, survival) {
         glance_tbl$RecruitmentType <- rv$recruitment_type
         coef <- bboutools::coef(rv$results)
 
-        if(rv$recruitment_type == "recruitment_adjusted") {
+        if (rv$recruitment_type == "recruitment_adjusted") {
           pred_results_table <- rv$results_table
         } else {
           pred_results_table <- rv$results_table_ccr
@@ -619,7 +617,6 @@ mod_recruitment_server <- function(id, survival) {
       {
         req(input$include_trend)
         withProgress(message = "Generating Results", value = 0, {
-
           rv$results_table_trend <- bboutools::bb_predict_recruitment_trend(
             rv$results
           )
@@ -674,7 +671,7 @@ mod_recruitment_server <- function(id, survival) {
         glance_tbl$RecruitmentType <- rv$recruitment_type
         coef <- bboutools::coef(rv$results)
 
-        if(rv$recruitment_type == "recruitment_adjusted") {
+        if (rv$recruitment_type == "recruitment_adjusted") {
           pred_rec <- rv$results_table_trend
         } else {
           pred_rec <- rv$results_table_trend_ccr
@@ -699,15 +696,15 @@ mod_recruitment_server <- function(id, survival) {
     # Clean Up ----------------------------------------------------------------
     observeEvent(input$upload,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new file uploaded"
@@ -715,15 +712,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$select_population,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new population selected"
@@ -731,15 +728,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$adult_sex_ratio,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new adult female ratio selected"
@@ -747,15 +744,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$calf_female_ratio,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when new yearling female ratio selected"
@@ -763,15 +760,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(survival$start_month,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when start month selected in the survival tab"
@@ -779,15 +776,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$include_trend,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when include trend is clicked"
@@ -795,15 +792,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$allow_missing,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when allow missing changed"
@@ -811,15 +808,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$anthro,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when anthro disturbance changed"
@@ -827,15 +824,15 @@ mod_recruitment_server <- function(id, survival) {
 
     observeEvent(input$fire_excl_anthro,
       {
-        rv$results = NULL
-        rv$results_plot = NULL
-        rv$results_plot_ccr = NULL
-        rv$results_plot_trend = NULL
-        rv$results_plot_trend_ccr = NULL
-        rv$results_table = NULL
-        rv$results_table_ccr = NULL
-        rv$results_table_trend = NULL
-        rv$results_table_trend_ccr = NULL
+        rv$results <- NULL
+        rv$results_plot <- NULL
+        rv$results_plot_ccr <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_plot_trend_ccr <- NULL
+        rv$results_table <- NULL
+        rv$results_table_ccr <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_table_trend_ccr <- NULL
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when fire disturbance changed"

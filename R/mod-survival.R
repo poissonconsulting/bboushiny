@@ -187,7 +187,6 @@ mod_survival_server <- function(id) {
         )
         if (is_try_error(file_type)) {
           return(toast_error(file_type))
-
         }
 
         if (grepl("\\.xlsx", input$upload$datapath)) {

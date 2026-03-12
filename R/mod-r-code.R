@@ -169,7 +169,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
         }
 
         if (!is.null(survival$anthro) && !is.na(survival$anthro) &&
-            !is.null(survival$fire_excl_anthro) && !is.na(survival$fire_excl_anthro)) {
+          !is.null(survival$fire_excl_anthro) && !is.na(survival$fire_excl_anthro)) {
           l5c <- paste0(
             "&nbsp priors = bb_priors_survival_national(",
             survival$anthro, ", ", survival$fire_excl_anthro, "),"
@@ -302,7 +302,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
         }
 
         if (!is.null(recruitment$anthro) && !is.na(recruitment$anthro) &&
-            !is.null(recruitment$fire_excl_anthro) && !is.na(recruitment$fire_excl_anthro)) {
+          !is.null(recruitment$fire_excl_anthro) && !is.na(recruitment$fire_excl_anthro)) {
           l6c <- paste0(
             "&nbsp priors = bb_priors_recruitment_national(",
             recruitment$anthro, ", ", recruitment$fire_excl_anthro, "),"
