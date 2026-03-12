@@ -10,7 +10,6 @@ Updated for bboutools 1.3.0 and bboudata 0.4.0.
 - Updated data plots to facet by PopulationName and CaribouYear for multi-population data.
 - Updated help files with documentation for new features.
 - Rewrote About page to link to bboutools articles instead of duplicating model specifications.
-- Added `nimbleQuad` to Depends.
 
 # bboushiny 0.2.2
 

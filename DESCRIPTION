@@ -20,7 +20,6 @@ URL: https://poissonconsulting.github.io/bboushiny/,
 BugReports: https://github.com/poissonconsulting/bboushiny/issues
 Depends:
     nimble,
-    nimbleQuad,
     R (>= 4.1)
 Imports:
     bboudata,
