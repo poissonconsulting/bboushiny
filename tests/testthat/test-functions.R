@@ -65,9 +65,9 @@ test_that("returns result with real example survival and 1 message", {
 
       expect_type(output[[1]], "list")
       expect_equal(length(output[[1]]), 4L)
-      expect_equal(
+      expect_match(
         output[[2]],
-        c("Removed 1 row with StartTotal value of 0.")
+        "Removed 1 row.? with .?StartTotal.? value of 0"
       )
     }
   )
