@@ -309,7 +309,7 @@ mod_recruitment_server <- function(id, survival) {
         ns("recruitment_type"),
         label = NULL,
         choices = list(
-          "Calves per Female Adult" = "recruitment_cf",
+          "Calves per Adult Female" = "recruitment_cf",
           "Adjusted Recruitment" = "recruitment_adjusted"
         ),
         selected = "recruitment_adjusted"
