@@ -49,7 +49,7 @@ plot_survival_data <- function(data) {
       y = .data$Count,
       fill = .data$name
     )) +
-    facet_wrap(~ PopulationName + CaribouYear) +
+    facet_wrap(~ .data$PopulationName + .data$CaribouYear) +
     theme_bw() +
     scale_y_continuous(
       breaks = scales::breaks_pretty(),

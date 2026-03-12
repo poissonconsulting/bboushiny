@@ -162,6 +162,10 @@ mod_population_growth_server <- function(id, survival, recruitment) {
             recruitment$results
           )
         )
+        if (is.character(growth$result)) {
+          toast_error(growth$result, title = "Population growth error")
+          return()
+        }
         rv$results_growth <- growth$result
 
         pop_change <- catch_output_and_messages(
@@ -170,6 +174,10 @@ mod_population_growth_server <- function(id, survival, recruitment) {
             recruitment$results
           )
         )
+        if (is.character(pop_change$result)) {
+          toast_error(pop_change$result, title = "Population change error")
+          return()
+        }
         rv$results_pop_change <- pop_change$result
 
         msgs <- unique(c(growth$messages, pop_change$messages))

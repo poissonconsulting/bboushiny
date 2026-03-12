@@ -1,5 +1,3 @@
-<!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
-
 # bboushiny 0.3.0
 
 Updated for bboutools 1.3.0 and bboudata 0.4.0.

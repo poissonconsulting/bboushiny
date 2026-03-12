@@ -33,7 +33,7 @@ For detailed information on the underlying models, methods and features, see the
 
 - [Prior Selection and Influence](https://poissonconsulting.github.io/bboutools/articles/priors.html) — An explanation of the default priors and how they influence parameter estimates. This article also covers national disturbance-informed priors, which are available in the app through the Anthropogenic Disturbance inputs.
 
-- [Extensions](https://poissonconsulting.github.io/bboutools/articles/extensions.html) — Coverage of multi-population analysis, aggregate annual survival data, prediction for unobserved years (the "Allow Missing Years" option in the app), and prior-only sampling.
+- [Extensions](https://poissonconsulting.github.io/bboutools/articles/extensions.html) — Coverage of multi-population analysis, aggregate annual survival data, prediction for unobserved years (the "Allow Unobserved Years" option in the app), and prior-only sampling.
 
 ### References
 
