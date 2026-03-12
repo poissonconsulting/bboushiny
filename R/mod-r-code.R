@@ -128,7 +128,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     })
 
     output$survival_select_pop <- renderUI({
-      if (survival$data_type == "upload" && survival$select_population != "All") {
+      if (!isFALSE(survival$data_type) && survival$select_population != "All") {
         l1 <- paste0(
           "data_survival <- data_survival[data_survival$PopulationName == '",
           survival$select_population,
@@ -251,7 +251,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     })
 
     output$recruitment_select_pop <- renderUI({
-      if (recruitment$data_type == "upload" && recruitment$select_population != "All") {
+      if (!isFALSE(recruitment$data_type) && recruitment$select_population != "All") {
         l1 <- paste0(
           "data_recruitment <- data_recruitment[data_recruitment$PopulationName == '",
           recruitment$select_population,
