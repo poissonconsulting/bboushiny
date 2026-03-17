@@ -44,9 +44,8 @@ Each of the Survival and Recruitment tabs have an 'Instructions' file that can b
 
 **Clearing estimates**
 
-When a new file is uploaded it will clear the estimate on the tab. 
-Selecting a different population will clear the estimate on the tab. 
-Restarting your browser will clear the entire app. 
+Changing any inputs (e.g., uploading a new file, selecting a different population, adjusting model settings) will clear the estimates on the tab.
+Restarting your browser will clear the entire app.
 
 **Please fix the following issue...**
 
