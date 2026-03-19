@@ -24,16 +24,20 @@ mod_recruitment_ui <- function(id, label = "recruitment") {
       size = "l"
     ),
     width = 12,
-    tags$label("1. Download Template"), br(),
+    tags$label("1. Download Template"),
+    br(),
     downloadButton(ns("download_recruitment"), "XLSX", class = "btn-primary"),
-    br(), br(),
-    uiOutput(ns("ui_start_month")), br(),
+    br(),
+    br(),
+    uiOutput(ns("ui_start_month")),
+    br(),
     tags$label("3. Upload Data or Use Demo Data"),
     uiOutput(ns("upload_recruitment")),
     uiOutput(ns("ui_demo_recruitment")),
     tags$label("4. Select Population"),
     uiOutput(ns("ui_select_population")),
-    tags$label("5. Choose Sex Ratios"), br(),
+    tags$label("5. Choose Sex Ratios"),
+    br(),
     uiOutput(ns("ui_adult_sex_ratio")),
     uiOutput(ns("ui_calf_female_ratio")),
     tags$label("6. Choose Recruitment Type"),
@@ -45,7 +49,8 @@ mod_recruitment_ui <- function(id, label = "recruitment") {
     tags$label("9. National Disturbance Priors (optional)"),
     uiOutput(ns("ui_anthro")),
     uiOutput(ns("ui_fire_excl_anthro")),
-    tags$label("10. Run Model"), br(),
+    tags$label("10. Run Model"),
+    br(),
     actionButton(
       ns("est_recruitment"),
       "Estimate Recruitment",
@@ -158,7 +163,8 @@ mod_recruitment_server <- function(id, survival) {
       )
     })
 
-    observeEvent(input$upload,
+    observeEvent(
+      input$upload,
       {
         # check type of file is correct
         file_type <- try(
@@ -182,7 +188,10 @@ mod_recruitment_server <- function(id, survival) {
         }
 
         # check column names
-        col_names <- try(check_col_names(template_recruitment, data), silent = TRUE)
+        col_names <- try(
+          check_col_names(template_recruitment, data),
+          silent = TRUE
+        )
         if (is_try_error(col_names)) {
           return(toast_error(col_names))
         }
@@ -263,7 +272,10 @@ mod_recruitment_server <- function(id, survival) {
       req(rv$data_filtered)
       req(survival$start_month_num)
       withProgress(message = "Generating Plot", value = 0, {
-        isolate(plot_recruitment_data(add_caribou_year(rv$data_filtered, survival$start_month_num)))
+        isolate(plot_recruitment_data(add_caribou_year(
+          rv$data_filtered,
+          survival$start_month_num
+        )))
       })
     })
 
@@ -405,7 +417,10 @@ mod_recruitment_server <- function(id, survival) {
             title = "Invalid input"
           ))
         }
-        priors <- bboutools::bb_priors_recruitment_national(anthro, fire_excl_anthro)
+        priors <- bboutools::bb_priors_recruitment_national(
+          anthro,
+          fire_excl_anthro
+        )
       }
 
       withProgress(
@@ -445,7 +460,8 @@ mod_recruitment_server <- function(id, survival) {
     })
 
     # Results Year Table ------------------------------------------------------
-    observeEvent(rv$results,
+    observeEvent(
+      rv$results,
       {
         withProgress(message = "Generating Results", value = 0, {
           rv$results_table <- bboutools::bb_predict_recruitment(
@@ -519,7 +535,6 @@ mod_recruitment_server <- function(id, survival) {
       label = "creates results list for downloading"
     )
 
-
     output$download_results_table_year <- downloadHandler(
       filename = "results_recruitment_year.xlsx",
       content = function(file) {
@@ -534,9 +549,13 @@ mod_recruitment_server <- function(id, survival) {
         req(rv$results_table_ccr)
         withProgress(message = "Generating Results", value = 0, {
           if (rv$recruitment_type == "recruitment_adjusted") {
-            rv$results_plot_year <- bboutools::bb_plot_year_recruitment(rv$results_table)
+            rv$results_plot_year <- bboutools::bb_plot_year_recruitment(
+              rv$results_table
+            )
           } else if (rv$recruitment_type == "recruitment_cf") {
-            rv$results_plot_year <- bboutools::bb_plot_year_calf_cow_ratio(rv$results_table_ccr)
+            rv$results_plot_year <- bboutools::bb_plot_year_calf_cow_ratio(
+              rv$results_table_ccr
+            )
           }
           rv$results_plot_year
         })
@@ -551,7 +570,11 @@ mod_recruitment_server <- function(id, survival) {
 
     output$download_results_plot_year_button <- renderUI({
       req(rv$results)
-      downloadButton(ns("download_results_plot_year"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_year"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_year <- downloadHandler(
@@ -576,9 +599,13 @@ mod_recruitment_server <- function(id, survival) {
         req(input$include_trend)
         withProgress(message = "Generating Results", value = 0, {
           if (rv$recruitment_type == "recruitment_adjusted") {
-            rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(rv$results_table_trend)
+            rv$results_plot_trend <- bboutools::bb_plot_year_trend_recruitment(
+              rv$results_table_trend
+            )
           } else if (rv$recruitment_type == "recruitment_cf") {
-            rv$results_plot_trend <- bboutools::bb_plot_year_trend_calf_cow_ratio(rv$results_table_trend_ccr)
+            rv$results_plot_trend <- bboutools::bb_plot_year_trend_calf_cow_ratio(
+              rv$results_table_trend_ccr
+            )
           }
           rv$results_plot_trend
         })
@@ -595,14 +622,20 @@ mod_recruitment_server <- function(id, survival) {
     output$download_results_plot_trend_button <- renderUI({
       req(rv$results)
       req(input$include_trend)
-      downloadButton(ns("download_results_plot_trend"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_trend"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_trend <- downloadHandler(
       filename = "results_recruitment_trend.png",
       content = function(file) {
         plot <- rv$results_plot_trend +
-          ggplot2::ggtitle("Annual recruitment estimates as trend line with credible limits")
+          ggplot2::ggtitle(
+            "Annual recruitment estimates as trend line with credible limits"
+          )
 
         ggplot2::ggsave(
           file,
@@ -613,7 +646,8 @@ mod_recruitment_server <- function(id, survival) {
     )
 
     # Results Trend Table -----------------------------------------------------
-    observeEvent(rv$results,
+    observeEvent(
+      rv$results,
       {
         req(input$include_trend)
         withProgress(message = "Generating Results", value = 0, {
@@ -694,7 +728,8 @@ mod_recruitment_server <- function(id, survival) {
     )
 
     # Clean Up ----------------------------------------------------------------
-    observeEvent(input$upload,
+    observeEvent(
+      input$upload,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -710,7 +745,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when new file uploaded"
     )
 
-    observeEvent(input$select_population,
+    observeEvent(
+      input$select_population,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -726,7 +762,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when new population selected"
     )
 
-    observeEvent(input$adult_sex_ratio,
+    observeEvent(
+      input$adult_sex_ratio,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -742,7 +779,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when new adult female ratio selected"
     )
 
-    observeEvent(input$calf_female_ratio,
+    observeEvent(
+      input$calf_female_ratio,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -758,7 +796,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when new yearling female ratio selected"
     )
 
-    observeEvent(survival$start_month,
+    observeEvent(
+      survival$start_month,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -774,7 +813,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when start month selected in the survival tab"
     )
 
-    observeEvent(input$include_trend,
+    observeEvent(
+      input$include_trend,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -790,7 +830,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when include trend is clicked"
     )
 
-    observeEvent(input$allow_missing,
+    observeEvent(
+      input$allow_missing,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -806,7 +847,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when allow missing changed"
     )
 
-    observeEvent(input$anthro,
+    observeEvent(
+      input$anthro,
       {
         rv$results <- NULL
         rv$results_plot <- NULL
@@ -822,7 +864,8 @@ mod_recruitment_server <- function(id, survival) {
       label = "clears results when anthro disturbance changed"
     )
 
-    observeEvent(input$fire_excl_anthro,
+    observeEvent(
+      input$fire_excl_anthro,
       {
         rv$results <- NULL
         rv$results_plot <- NULL

@@ -24,7 +24,8 @@ mod_population_growth_ui <- function(id, label = "population growth") {
       size = "l"
     ),
     width = 12,
-    tags$label("1. Calculate Population Growth"), br(),
+    tags$label("1. Calculate Population Growth"),
+    br(),
     actionButton(
       ns("calc_pop_growth"),
       "Calculate Population Growth",
@@ -129,7 +130,6 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       req(recruitment$results)
       DT::DTOutput(ns("recruitment_table"))
     })
-
 
     # Calculate Results -------------------------------------------------------
     observeEvent(input$calc_pop_growth, {
@@ -288,7 +288,9 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       {
         req(rv$results_growth)
         withProgress(message = "Generating results", value = 0, {
-          rv$results_plot_growth <- bboutools::bb_plot_year_growth(rv$results_growth)
+          rv$results_plot_growth <- bboutools::bb_plot_year_growth(
+            rv$results_growth
+          )
           rv$results_plot_growth
         })
       },
@@ -302,7 +304,11 @@ mod_population_growth_server <- function(id, survival, recruitment) {
 
     output$download_results_plot_growth_button <- renderUI({
       req(rv$results_growth)
-      downloadButton(ns("download_results_plot_growth"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_growth"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_growth <- downloadHandler(
@@ -324,7 +330,9 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       {
         req(rv$results_pop_change)
         withProgress(message = "Generating results", value = 0, {
-          rv$results_plot_pop_change <- bboutools::bb_plot_year_population_change(rv$results_pop_change)
+          rv$results_plot_pop_change <- bboutools::bb_plot_year_population_change(
+            rv$results_pop_change
+          )
           rv$results_plot_pop_change
         })
       },
@@ -338,7 +346,11 @@ mod_population_growth_server <- function(id, survival, recruitment) {
 
     output$download_results_plot_pop_change_button <- renderUI({
       req(rv$results_pop_change)
-      downloadButton(ns("download_results_plot_pop_change"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_pop_change"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_pop_change <- downloadHandler(

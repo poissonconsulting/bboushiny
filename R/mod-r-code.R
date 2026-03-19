@@ -85,7 +85,8 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       }
     })
 
-    observeEvent(survival$data,
+    observeEvent(
+      survival$data,
       {
         rv$readr_survival <- FALSE
         rv$readxl_survival <- FALSE
@@ -94,7 +95,8 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       label = "clears pkg associated with getting survival data when data in survival tab changes"
     )
 
-    observeEvent(recruitment$data,
+    observeEvent(
+      recruitment$data,
       {
         rv$readr_recruitment <- FALSE
         rv$readxl_recruitment <- FALSE
@@ -104,15 +106,27 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     )
 
     output$survival_data <- renderUI({
-      if (survival$data_type == "upload" & grepl("\\.csv", survival$upload_file)) {
+      if (
+        survival$data_type == "upload" & grepl("\\.csv", survival$upload_file)
+      ) {
         l1 <- ""
-        l2 <- paste0("data_survival <- read_csv(file = '", survival$upload_file, "')")
+        l2 <- paste0(
+          "data_survival <- read_csv(file = '",
+          survival$upload_file,
+          "')"
+        )
         rv$readr_survival <- TRUE
       }
 
-      if (survival$data_type == "upload" & grepl("\\.xlsx", survival$upload_file)) {
+      if (
+        survival$data_type == "upload" & grepl("\\.xlsx", survival$upload_file)
+      ) {
         l1 <- ""
-        l2 <- paste0("data_survival <- read_excel(file = '", survival$upload_file, "')")
+        l2 <- paste0(
+          "data_survival <- read_excel(file = '",
+          survival$upload_file,
+          "')"
+        )
         rv$readxl_survival <- TRUE
       }
 
@@ -168,11 +182,18 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
           l5b <- NULL
         }
 
-        if (!is.null(survival$anthro) && !is.na(survival$anthro) &&
-          !is.null(survival$fire_excl_anthro) && !is.na(survival$fire_excl_anthro)) {
+        if (
+          !is.null(survival$anthro) &&
+            !is.na(survival$anthro) &&
+            !is.null(survival$fire_excl_anthro) &&
+            !is.na(survival$fire_excl_anthro)
+        ) {
           l5c <- paste0(
             "&nbsp priors = bb_priors_survival_national(",
-            survival$anthro, ", ", survival$fire_excl_anthro, "),"
+            survival$anthro,
+            ", ",
+            survival$fire_excl_anthro,
+            "),"
           )
         } else {
           l5c <- NULL
@@ -225,17 +246,30 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       HTML(text)
     })
 
-
     output$recruitment_data <- renderUI({
-      if (recruitment$data_type == "upload" & grepl("\\.csv", recruitment$upload_file)) {
+      if (
+        recruitment$data_type == "upload" &
+          grepl("\\.csv", recruitment$upload_file)
+      ) {
         l1 <- ""
-        l2 <- paste0("data_recruitment <- read_csv(file = '", recruitment$upload_file, "')")
+        l2 <- paste0(
+          "data_recruitment <- read_csv(file = '",
+          recruitment$upload_file,
+          "')"
+        )
         rv$readr_recruitment <- TRUE
       }
 
-      if (recruitment$data_type == "upload" & grepl("\\.xlsx", recruitment$upload_file)) {
+      if (
+        recruitment$data_type == "upload" &
+          grepl("\\.xlsx", recruitment$upload_file)
+      ) {
         l1 <- ""
-        l2 <- paste0("data_recruitment <- read_excel(file = '", recruitment$upload_file, "')")
+        l2 <- paste0(
+          "data_recruitment <- read_excel(file = '",
+          recruitment$upload_file,
+          "')"
+        )
         rv$readxl_recruitment <- TRUE
       }
 
@@ -251,7 +285,10 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
     })
 
     output$recruitment_select_pop <- renderUI({
-      if (!isFALSE(recruitment$data_type) && recruitment$select_population != "All") {
+      if (
+        !isFALSE(recruitment$data_type) &&
+          recruitment$select_population != "All"
+      ) {
         l1 <- paste0(
           "data_recruitment <- data_recruitment[data_recruitment$PopulationName == '",
           recruitment$select_population,
@@ -275,7 +312,11 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
           l3 <- paste0("&nbsp adult_female_proportion = ", "NULL", ",")
         } else {
           if (recruitment$adult_sex_ratio) {
-            l3 <- paste0("&nbsp adult_female_proportion = ", recruitment$adult_sex_ratio, ",")
+            l3 <- paste0(
+              "&nbsp adult_female_proportion = ",
+              recruitment$adult_sex_ratio,
+              ","
+            )
           } else {
             l3 <- NULL
           }
@@ -301,11 +342,18 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
           l6b <- NULL
         }
 
-        if (!is.null(recruitment$anthro) && !is.na(recruitment$anthro) &&
-          !is.null(recruitment$fire_excl_anthro) && !is.na(recruitment$fire_excl_anthro)) {
+        if (
+          !is.null(recruitment$anthro) &&
+            !is.na(recruitment$anthro) &&
+            !is.null(recruitment$fire_excl_anthro) &&
+            !is.na(recruitment$fire_excl_anthro)
+        ) {
           l6c <- paste0(
             "&nbsp priors = bb_priors_recruitment_national(",
-            recruitment$anthro, ", ", recruitment$fire_excl_anthro, "),"
+            recruitment$anthro,
+            ", ",
+            recruitment$fire_excl_anthro,
+            "),"
           )
         } else {
           l6c <- NULL
@@ -320,7 +368,20 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       }
 
       if (recruitment$model) {
-        text <- paste(l0, l1, l2, l3, l4, l5, l6, l6b, l6c, l7, l8, sep = "<br/>")
+        text <- paste(
+          l0,
+          l1,
+          l2,
+          l3,
+          l4,
+          l5,
+          l6,
+          l6b,
+          l6c,
+          l7,
+          l8,
+          sep = "<br/>"
+        )
         text <- gsub("(<br/>){2,}", "<br/>", text)
         HTML(text)
       }

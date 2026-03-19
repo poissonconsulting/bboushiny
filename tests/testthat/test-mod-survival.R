@@ -21,7 +21,11 @@ testServer(mod_survival_server, {
   expect_equal(
     colnames(survival_template),
     c(
-      "PopulationName", "Year", "Month", "StartTotal", "MortalitiesCertain",
+      "PopulationName",
+      "Year",
+      "Month",
+      "StartTotal",
+      "MortalitiesCertain",
       "MortalitiesUncertain"
     )
   )
@@ -209,7 +213,11 @@ test_that("throws error when dataframe is empty ie no data added to template", {
   df <- setNames(
     data.frame(matrix(ncol = 6, nrow = 0)),
     c(
-      "PopulationName", "Year", "Month", "StartTotal", "MortalitiesCertain",
+      "PopulationName",
+      "Year",
+      "Month",
+      "StartTotal",
+      "MortalitiesCertain",
       "MortalitiesUncertain"
     )
   )
