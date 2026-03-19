@@ -30,7 +30,9 @@ plot_survival_data <- function(data) {
     tidyr::drop_na()
 
   data$Month <- as.factor(data$Month)
-  data$Alive <- data$StartTotal - data$MortalitiesCertain - data$MortalitiesUncertain
+  data$Alive <- data$StartTotal -
+    data$MortalitiesCertain -
+    data$MortalitiesUncertain
 
   data <- tidyr::pivot_longer(
     data,
@@ -81,8 +83,12 @@ plot_recruitment_data <- function(data) {
 
   data_count <- data |>
     dplyr::select(
-      -"Bulls", -"UnknownAdults", -"Yearlings", -"Year",
-      -"Month", -"Day"
+      -"Bulls",
+      -"UnknownAdults",
+      -"Yearlings",
+      -"Year",
+      -"Month",
+      -"Day"
     ) |>
     dplyr::group_by(.data$PopulationName, .data$Date) |>
     dplyr::summarise(
@@ -99,7 +105,12 @@ plot_recruitment_data <- function(data) {
 
   data <- data |>
     dplyr::select(
-      "PopulationName", "Date", "Month", "Day", "CaribouYear", "CaribouMonth"
+      "PopulationName",
+      "Date",
+      "Month",
+      "Day",
+      "CaribouYear",
+      "CaribouMonth"
     ) |>
     dplyr::distinct()
 
@@ -238,7 +249,9 @@ catch_output_and_messages <- function(expr) {
     error = err
   )
   msgs <- msgs[!grepl("^Registered S3 method", msgs)]
-  if (length(msgs) == 0) msgs <- NULL
+  if (length(msgs) == 0) {
+    msgs <- NULL
+  }
   return(list(result = res, messages = msgs))
 }
 
@@ -256,7 +269,8 @@ check_file_type <- function(x, ext = "csv") {
     chk::abort_chk(
       paste(
         "We're not sure what to do with that file type.
-        Please upload a", ext
+        Please upload a",
+        ext
       )
     )
   }
@@ -268,8 +282,10 @@ check_col_names <- function(template, upload_data) {
   data_colnames <- colnames(upload_data)
 
   if (!chk::vld_identical(template_colnames, data_colnames)) {
-    chk::abort_chk("The column names in the uploaded file do not match the
-                   column names from the template.")
+    chk::abort_chk(
+      "The column names in the uploaded file do not match the
+                   column names from the template."
+    )
   }
 }
 
@@ -277,8 +293,10 @@ safe_as_integer <- function(x, name) {
   bad <- unique(x[!is.na(x) & suppressWarnings(is.na(as.integer(x)))])
   if (length(bad) > 0) {
     chk::abort_chk(paste0(
-      "The following value(s) in column '", name,
-      "' should be a integer: ", chk::cc(bad, " and ")
+      "The following value(s) in column '",
+      name,
+      "' should be a integer: ",
+      chk::cc(bad, " and ")
     ))
   }
   as.integer(x)
@@ -286,7 +304,10 @@ safe_as_integer <- function(x, name) {
 
 check_survival_col_types <- function(data) {
   integer_cols <- c(
-    "Year", "Month", "StartTotal", "MortalitiesCertain",
+    "Year",
+    "Month",
+    "StartTotal",
+    "MortalitiesCertain",
     "MortalitiesUncertain"
   )
   char_cols <- c("PopulationName")
@@ -304,8 +325,14 @@ check_survival_col_types <- function(data) {
 
 check_recruitment_col_types <- function(data) {
   integer_cols <- c(
-    "Year", "Month", "Day", "Cows", "Bulls", "UnknownAdults",
-    "Yearlings", "Calves"
+    "Year",
+    "Month",
+    "Day",
+    "Cows",
+    "Bulls",
+    "UnknownAdults",
+    "Yearlings",
+    "Calves"
   )
   char_cols <- c("PopulationName")
 
@@ -328,13 +355,17 @@ check_data_not_empty <- function(data) {
 
 check_data_year <- function(data) {
   if (!chk::vld_range(nchar(data$Year), c(4, 4))) {
-    chk::abort_chk("The Year column must have years formatted as a 4 digit year (ex. 2023)")
+    chk::abort_chk(
+      "The Year column must have years formatted as a 4 digit year (ex. 2023)"
+    )
   }
   data
 }
 
 check_data_month <- function(data) {
-  if (!all(data$Month %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, NA_integer_))) {
+  if (
+    !all(data$Month %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, NA_integer_))
+  ) {
     chk::abort_chk("The Month column can only contain values from 1 to 12")
   }
   data
@@ -342,11 +373,16 @@ check_data_month <- function(data) {
 
 #### Bboutool wrappers ####
 
-fit_recruitment_estimate <- function(data, adult_female_ratio,
-                                     calf_female_ratio, year_trend,
-                                     year_start, nthin,
-                                     priors = NULL,
-                                     allow_missing = FALSE) {
+fit_recruitment_estimate <- function(
+  data,
+  adult_female_ratio,
+  calf_female_ratio,
+  year_trend,
+  year_start,
+  nthin,
+  priors = NULL,
+  allow_missing = FALSE
+) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
 
@@ -381,7 +417,9 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
   toast_warning(
     paste(
       "The model did not reach convergence after trying several thinning",
-      "values with the highest value being nthin =", n, ". The data set exceeds",
+      "values with the highest value being nthin =",
+      n,
+      ". The data set exceeds",
       "the capacity of the default settings in the bboushiny app. Please use",
       "the bboutools package to analyse the data. Check out the About tab for",
       "more info on the models."
@@ -390,10 +428,15 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
   )
 }
 
-fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
-                                  year_start, nthin,
-                                  priors = NULL,
-                                  allow_missing = FALSE) {
+fit_survival_estimate <- function(
+  data,
+  year_trend,
+  include_uncertain_morts,
+  year_start,
+  nthin,
+  priors = NULL,
+  allow_missing = FALSE
+) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
 
@@ -427,7 +470,9 @@ fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
   toast_warning(
     paste(
       "The model did not reach convergence after trying several thinning",
-      "values with the highest value being nthin =", n, ". The data set exceeds",
+      "values with the highest value being nthin =",
+      n,
+      ". The data set exceeds",
       "the capacity of the default settings in the bboushiny app. Please use",
       "the bboutools package to analyse the data. Check out the About tab for",
       "more info on the models."
@@ -442,8 +487,17 @@ month_to_numeric <- function(month) {
     return(NULL)
   }
   num_month <- c(
-    January = 1L, February = 2L, March = 3L, April = 4L, May = 5L, June = 6L,
-    July = 7L, August = 8L, September = 9L, October = 10L, November = 11L,
+    January = 1L,
+    February = 2L,
+    March = 3L,
+    April = 4L,
+    May = 5L,
+    June = 6L,
+    July = 7L,
+    August = 8L,
+    September = 9L,
+    October = 10L,
+    November = 11L,
     December = 12L
   )
   num_month[[month]]
