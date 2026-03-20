@@ -123,7 +123,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       ) {
         l1 <- ""
         l2 <- paste0(
-          "data_survival <- read_excel(file = '",
+          "data_survival <- read_excel(path = '",
           survival$upload_file,
           "')"
         )
@@ -266,7 +266,7 @@ mod_r_code_server <- function(id, survival, recruitment, population_growth) {
       ) {
         l1 <- ""
         l2 <- paste0(
-          "data_recruitment <- read_excel(file = '",
+          "data_recruitment <- read_excel(path = '",
           recruitment$upload_file,
           "')"
         )

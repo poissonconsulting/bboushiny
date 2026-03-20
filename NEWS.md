@@ -1,3 +1,8 @@
+# bboushiny 0.3.1
+
+- Fixed bug in R Code tab where generated code used wrong argument name for `read_excel()`.
+- Added `nimbleQuad` to Depends.
+
 # bboushiny 0.3.0
 
 Updated for bboutools 1.3.0 and bboudata 0.4.0.

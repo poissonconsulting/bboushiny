@@ -2,7 +2,7 @@ Type: Package
 Package: bboushiny
 Title: Shiny App for Analysing Boreal Caribou Surival, Recruitment and
     Lambda
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Pearson", "Ayla", , "ayla@poissonconsulting.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7388-1222")),
@@ -20,6 +20,7 @@ URL: https://poissonconsulting.github.io/bboushiny/,
 BugReports: https://github.com/poissonconsulting/bboushiny/issues
 Depends:
     nimble,
+    nimbleQuad,
     R (>= 4.1)
 Imports:
     bboudata,
