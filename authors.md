@@ -21,13 +21,13 @@ Source:
 [`DESCRIPTION`](https://github.com/poissonconsulting/bboushiny/blob/main/DESCRIPTION)
 
 Ayla P (2026). *bboushiny: Shiny App for Analysing Boreal Caribou
-Surival, Recruitment and Lambda*. R package version 0.3.0,
+Surival, Recruitment and Lambda*. R package version 0.3.1,
 <https://poissonconsulting.github.io/bboushiny/>.
 
     @Manual{,
       title = {bboushiny: Shiny App for Analysing Boreal Caribou Surival, Recruitment and Lambda},
       author = {Pearson Ayla},
       year = {2026},
-      note = {R package version 0.3.0},
+      note = {R package version 0.3.1},
       url = {https://poissonconsulting.github.io/bboushiny/},
     }
