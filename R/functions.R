@@ -30,7 +30,9 @@ plot_survival_data <- function(data) {
     tidyr::drop_na()
 
   data$Month <- as.factor(data$Month)
-  data$Alive <- data$StartTotal - data$MortalitiesCertain - data$MortalitiesUncertain
+  data$Alive <- data$StartTotal -
+    data$MortalitiesCertain -
+    data$MortalitiesUncertain
 
   data <- tidyr::pivot_longer(
     data,
@@ -49,7 +51,7 @@ plot_survival_data <- function(data) {
       y = .data$Count,
       fill = .data$name
     )) +
-    facet_wrap(~CaribouYear) +
+    facet_wrap(~ .data$PopulationName + .data$CaribouYear) +
     theme_bw() +
     scale_y_continuous(
       breaks = scales::breaks_pretty(),
@@ -76,17 +78,23 @@ plot_survival_data <- function(data) {
 }
 
 plot_recruitment_data <- function(data) {
+  data <- data[!is.na(data$Month), ]
   data$Date <- paste(data$Year, data$Month, data$Day, sep = "-")
 
   data_count <- data |>
     dplyr::select(
-      -"Bulls", -"UnknownAdults", -"Yearlings", -"Year",
-      -"Month", -"Day"
+      -"Bulls",
+      -"UnknownAdults",
+      -"Yearlings",
+      -"Year",
+      -"Month",
+      -"Day"
     ) |>
-    dplyr::group_by(.data$Date) |>
+    dplyr::group_by(.data$PopulationName, .data$Date) |>
     dplyr::summarise(
       Cows = sum(.data$Cows),
-      Calves = sum(.data$Calves)
+      Calves = sum(.data$Calves),
+      .groups = "drop"
     ) |>
     tidyr::pivot_longer(cols = c("Cows", "Calves"), values_to = "Count")
 
@@ -97,12 +105,17 @@ plot_recruitment_data <- function(data) {
 
   data <- data |>
     dplyr::select(
-      "Date", "Month", "Day", "CaribouYear", "CaribouMonth"
+      "PopulationName",
+      "Date",
+      "Month",
+      "Day",
+      "CaribouYear",
+      "CaribouMonth"
     ) |>
     dplyr::distinct()
 
   data_count <- data_count |>
-    dplyr::left_join(data, by = c("Date")) |>
+    dplyr::left_join(data, by = c("PopulationName", "Date")) |>
     dplyr::arrange(.data$CaribouYear, .data$CaribouMonth, .data$Day) |>
     dplyr::mutate(
       plot_order = seq_len(dplyr::n())
@@ -117,7 +130,7 @@ plot_recruitment_data <- function(data) {
       ),
       position = "dodge"
     ) +
-    facet_wrap(~ .data$CaribouYear, scales = "free_x") +
+    facet_wrap(~ .data$PopulationName + .data$CaribouYear, scales = "free_x") +
     scale_y_continuous(
       breaks = c(0, 40, 80, 120),
     ) +
@@ -162,45 +175,53 @@ DT_options <- function(data) {
 
 #### Display ####
 
-calculate_modal <- function(x) {
-  x <- paste(
-    "The", tolower(x), "results are required to calculate Population Growth.",
-    "Go back to the", x, "tab to upload data and generate an estimate.",
-    "You can check the results have been pulled through if the Estimates
-             box has", x, "populated."
-  )
-  modalDialog(
-    title = "",
-    footer = modalButton(label = "Got it"),
-    tagList(
-      paste(x)
+toast_info <- function(messages) {
+  bs4Dash::toast(
+    title = "Info",
+    body = paste(messages, collapse = "<br>"),
+    options = list(
+      autohide = FALSE,
+      position = "topRight",
+      close = TRUE,
+      class = "bg-info bbou-toast"
     )
   )
 }
 
-check_modal <- function(check, title = "Please fix the following issue ...") {
+toast_error <- function(check, title = "Please fix the following issue") {
   msg <- gsub("^Error [^:]*\\) : \n  ", "", check[1])
   msg <- gsub("Error : ", "", msg)
-  modalDialog(paste(msg),
-    title = title, footer = modalButton("Got it")
-  )
-}
-
-modal_error_modal <- function(msg) {
-  showModal(
-    modalDialog(
-      msg,
-      footer = modalButton("Ok")
+  bs4Dash::toast(
+    title = title,
+    body = paste(msg),
+    options = list(
+      autohide = FALSE,
+      icon = "fas fa-exclamation-triangle",
+      position = "topRight",
+      close = TRUE,
+      class = "bg-danger bbou-toast"
     )
   )
 }
 
-modal_missing_data <- function() {
-  showModal(
-    modalDialog(
-      "Please upload data or use the demo data.",
-      footer = modalButton("Ok")
+toast_warning <- function(msg, title = "Warning") {
+  bs4Dash::toast(
+    title = title,
+    body = msg,
+    options = list(
+      autohide = FALSE,
+      icon = "fas fa-exclamation-circle",
+      position = "topRight",
+      close = TRUE,
+      class = "bg-warning bbou-toast"
     )
+  )
+}
+
+toast_missing_data <- function() {
+  toast_warning(
+    "Please upload data or use the demo data.",
+    title = "Missing data"
   )
 }
 
@@ -216,13 +237,21 @@ catch_output_and_messages <- function(expr) {
       withCallingHandlers(
         expr = expr,
         message = function(m) {
-          msgs <<- c(msgs, gsub("\n", "", m[[1]]))
+          msg <- gsub("\n", "", m[[1]])
+          msg <- cli::ansi_strip(msg)
+          msg <- gsub("[\u2139\u26A0\u2716\u2714\u2022\u25CF]\\s*", "", msg)
+          msg <- trimws(msg)
+          msgs <<- c(msgs, msg)
           msgs
         }
       )
     },
     error = err
   )
+  msgs <- msgs[!grepl("^Registered S3 method", msgs)]
+  if (length(msgs) == 0) {
+    msgs <- NULL
+  }
   return(list(result = res, messages = msgs))
 }
 
@@ -240,7 +269,8 @@ check_file_type <- function(x, ext = "csv") {
     chk::abort_chk(
       paste(
         "We're not sure what to do with that file type.
-        Please upload a", ext
+        Please upload a",
+        ext
       )
     )
   }
@@ -252,8 +282,10 @@ check_col_names <- function(template, upload_data) {
   data_colnames <- colnames(upload_data)
 
   if (!chk::vld_identical(template_colnames, data_colnames)) {
-    chk::abort_chk("The column names in the uploaded file do not match the
-                   column names from the template.")
+    chk::abort_chk(
+      "The column names in the uploaded file do not match the
+                   column names from the template."
+    )
   }
 }
 
@@ -261,8 +293,10 @@ safe_as_integer <- function(x, name) {
   bad <- unique(x[!is.na(x) & suppressWarnings(is.na(as.integer(x)))])
   if (length(bad) > 0) {
     chk::abort_chk(paste0(
-      "The following value(s) in column '", name,
-      "' should be a integer: ", chk::cc(bad, " and ")
+      "The following value(s) in column '",
+      name,
+      "' should be a integer: ",
+      chk::cc(bad, " and ")
     ))
   }
   as.integer(x)
@@ -270,7 +304,10 @@ safe_as_integer <- function(x, name) {
 
 check_survival_col_types <- function(data) {
   integer_cols <- c(
-    "Year", "Month", "StartTotal", "MortalitiesCertain",
+    "Year",
+    "Month",
+    "StartTotal",
+    "MortalitiesCertain",
     "MortalitiesUncertain"
   )
   char_cols <- c("PopulationName")
@@ -288,8 +325,14 @@ check_survival_col_types <- function(data) {
 
 check_recruitment_col_types <- function(data) {
   integer_cols <- c(
-    "Year", "Month", "Day", "Cows", "Bulls", "UnknownAdults",
-    "Yearlings", "Calves"
+    "Year",
+    "Month",
+    "Day",
+    "Cows",
+    "Bulls",
+    "UnknownAdults",
+    "Yearlings",
+    "Calves"
   )
   char_cols <- c("PopulationName")
 
@@ -312,13 +355,17 @@ check_data_not_empty <- function(data) {
 
 check_data_year <- function(data) {
   if (!chk::vld_range(nchar(data$Year), c(4, 4))) {
-    chk::abort_chk("The Year column must have years formatted as a 4 digit year (ex. 2023)")
+    chk::abort_chk(
+      "The Year column must have years formatted as a 4 digit year (ex. 2023)"
+    )
   }
   data
 }
 
 check_data_month <- function(data) {
-  if (!all(data$Month %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, NA_integer_))) {
+  if (
+    !all(data$Month %in% c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, NA_integer_))
+  ) {
     chk::abort_chk("The Month column can only contain values from 1 to 12")
   }
   data
@@ -326,9 +373,16 @@ check_data_month <- function(data) {
 
 #### Bboutool wrappers ####
 
-fit_recruitment_estimate <- function(data, adult_female_ratio,
-                                     calf_female_ratio, year_trend,
-                                     year_start, nthin) {
+fit_recruitment_estimate <- function(
+  data,
+  adult_female_ratio,
+  calf_female_ratio,
+  year_trend,
+  year_start,
+  nthin,
+  priors = NULL,
+  allow_missing = FALSE
+) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
 
@@ -341,12 +395,14 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
         adult_female_proportion = adult_female_ratio,
         sex_ratio = calf_female_ratio,
         year_trend = year_trend,
-        year_start = year_start
+        year_start = year_start,
+        priors = priors,
+        allow_missing = allow_missing
       )
     )
 
     if (!chk::vld_is(fit[[1]], "bboufit")) {
-      modal_error_modal(fit[[1]])
+      toast_error(fit[[1]], title = "Model error")
       fit <- NULL
       return(fit)
     }
@@ -358,22 +414,29 @@ fit_recruitment_estimate <- function(data, adult_female_ratio,
       return(fit)
     }
   }
-  showModal(
-    check_modal(
-      title = "Model did not converge",
-      paste(
-        "The model did not reach convergence after trying several thinning
-        values with the highest value being nthin =", n, ". The data set exceeds
-        the capacity of the default settings in the bboushiny app. Please use
-        the bboutools package to analyse the data. Check out the About tab for
-        more info on the models."
-      )
-    )
+  toast_warning(
+    paste(
+      "The model did not reach convergence after trying several thinning",
+      "values with the highest value being nthin =",
+      n,
+      ". The data set exceeds",
+      "the capacity of the default settings in the bboushiny app. Please use",
+      "the bboutools package to analyse the data. Check out the About tab for",
+      "more info on the models."
+    ),
+    title = "Model did not converge"
   )
 }
 
-fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
-                                  year_start, nthin) {
+fit_survival_estimate <- function(
+  data,
+  year_trend,
+  include_uncertain_morts,
+  year_start,
+  nthin,
+  priors = NULL,
+  allow_missing = FALSE
+) {
   chk::chk_data(data)
   chk::chk_vector(nthin)
 
@@ -385,12 +448,14 @@ fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
         year_trend = year_trend,
         include_uncertain_morts = include_uncertain_morts,
         year_start = year_start,
-        nthin = n
+        nthin = n,
+        priors = priors,
+        allow_missing = allow_missing
       )
     )
 
     if (!chk::vld_is(fit[[1]], "bboufit")) {
-      modal_error_modal(fit[[1]])
+      toast_error(fit[[1]], title = "Model error")
       fit <- NULL
       return(fit)
     }
@@ -402,17 +467,17 @@ fit_survival_estimate <- function(data, year_trend, include_uncertain_morts,
       return(fit)
     }
   }
-  showModal(
-    check_modal(
-      title = "Model did not converge",
-      paste(
-        "The model did not reach convergence after trying several thinning
-        values with the highest value being nthin =", n, ". The data set exceeds
-        the capacity of the default settings in the bboushiny app. Please use
-        the bboutools package to analyse the data. Check out the About tab for
-        more info on the models."
-      )
-    )
+  toast_warning(
+    paste(
+      "The model did not reach convergence after trying several thinning",
+      "values with the highest value being nthin =",
+      n,
+      ". The data set exceeds",
+      "the capacity of the default settings in the bboushiny app. Please use",
+      "the bboutools package to analyse the data. Check out the About tab for",
+      "more info on the models."
+    ),
+    title = "Model did not converge"
   )
 }
 
@@ -422,8 +487,17 @@ month_to_numeric <- function(month) {
     return(NULL)
   }
   num_month <- c(
-    January = 1L, February = 2L, March = 3L, April = 4L, May = 5L, June = 6L,
-    July = 7L, August = 8L, September = 9L, October = 10L, November = 11L,
+    January = 1L,
+    February = 2L,
+    March = 3L,
+    April = 4L,
+    May = 5L,
+    June = 6L,
+    July = 7L,
+    August = 8L,
+    September = 9L,
+    October = 10L,
+    November = 11L,
     December = 12L
   )
   num_month[[month]]

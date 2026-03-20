@@ -24,11 +24,13 @@ Complete the steps in order.
 1. Download the template.
 2. Confirm the Caribou Year start month is correct.
 3. Fill in the template with your data and upload the file (csv or xlsx).
-4. Select a population and confirm the data is correct by checking the table and plot section under the Data box.
+4. Select a population (or "All" for a joint multi-population model) and confirm the data is correct by checking the table and plot section under the Data box.
 5. Enter the sex ratio for Adults and Calves.
-6. Select the recruitment reporting method. 
+6. Select the recruitment reporting method.
 7. Select whether to include year trend.
-8. Press the Estimate Recruitment button which will run the model and generate the outputs for the Results Box.
+8. Optionally check "Allow Unobserved Years" if your data contains placeholder rows for years without observations.
+9. Optionally enter national disturbance priors (% anthropogenic and % fire excluding anthropogenic).
+10. Press the Estimate Recruitment button which will run the model and generate the outputs for the Results Box.
 
 ### Detailed Instructions
 
@@ -86,10 +88,10 @@ If a new dataset is loaded after the results are run it will clear the results.
 #### Select Population
 
 This option will contain a list of the PopulationName values once a dataset has been loaded into the app.
-Only a single population can be selected at once.
+Select "All" to fit a joint multi-population model using all populations in the dataset, or select a specific population to fit a single-population model.
 The options will be sorted alphabetically.
 
-To select a population click on the arrow in the drop-down box and select a different population. 
+To select a population click on the arrow in the drop-down box and select a different population.
 
 If the Select Population option is changed after the results are run it will clear the results.
 
@@ -130,6 +132,26 @@ If Include Year Trend is ticked **yes** the model will include a year trend effe
 When ticked **yes** you will see Table Trend and Plot Trend appear in the Results box.
 
 If the Include Year Trend option is changed after the results are run it will clear the results.
+
+#### Allow Unobserved Years
+
+Check this box if your data includes placeholder rows for years without observations.
+Placeholder rows have `NA` values in all measurement columns (e.g., `Month`, `Day`, `Cows`, `Bulls`, `UnknownAdults`, `Yearlings`, `Calves`).
+When enabled, the model will estimate recruitment for these unobserved years using the hierarchical structure of the model.
+
+The default setting is to not allow unobserved years.
+
+If the Allow Unobserved Years option is changed after the results are run it will clear the results.
+
+#### National Disturbance Priors
+
+Optionally enter national disturbance prior values to use informative priors based on the national disturbance-recruitment relationship.
+Enter the percentage of anthropogenic disturbance and the percentage of fire disturbance excluding anthropogenic disturbance for the population's range.
+The sum of the two values must not exceed 100%.
+
+If either value is left blank (NA), default (non-informative) priors will be used.
+
+If the disturbance values are changed after the results are run it will clear the results.
 
 #### Run Model & Results
 
@@ -173,7 +195,9 @@ The results will be cleared when:
 - a new data set is loaded.
 - a different population is selected from the drop-down menu.
 - a sex ratio is changed.
-- the include trend box is changed. 
+- the include trend box is changed.
+- the allow unobserved years box is changed.
+- the national disturbance prior values are changed.
 
 #### Need More Help
 

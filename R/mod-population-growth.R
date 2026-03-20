@@ -24,7 +24,8 @@ mod_population_growth_ui <- function(id, label = "population growth") {
       size = "l"
     ),
     width = 12,
-    tags$label("1. Calculate Population Growth"), br(),
+    tags$label("1. Calculate Population Growth"),
+    br(),
     actionButton(
       ns("calc_pop_growth"),
       "Calculate Population Growth",
@@ -130,32 +131,59 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       DT::DTOutput(ns("recruitment_table"))
     })
 
-
     # Calculate Results -------------------------------------------------------
     observeEvent(input$calc_pop_growth, {
       if (is.null(survival$results)) {
-        return(showModal(calculate_modal("Survival")))
+        return(toast_warning(
+          paste(
+            "The survival results are required to calculate Population Growth.",
+            "Go back to the Survival tab to upload data and generate an estimate."
+          ),
+          title = "Missing Survival results"
+        ))
       }
       if (is.null(recruitment$results)) {
-        return(showModal(calculate_modal("Recruitment")))
+        return(toast_warning(
+          paste(
+            "The recruitment results are required to calculate Population Growth.",
+            "Go back to the Recruitment tab to upload data and generate an estimate."
+          ),
+          title = "Missing Recruitment results"
+        ))
       }
 
       req(survival$results)
       req(recruitment$results)
-      req(recruitment$calf_female_ratio)
 
       withProgress(message = "Generating results", value = 0, {
-        rv$results_growth <- bboutools::bb_predict_growth(
-          survival$results,
-          recruitment$results,
-          sex_ratio = recruitment$calf_female_ratio
+        growth <- catch_output_and_messages(
+          bboutools::bb_predict_growth(
+            survival$results,
+            recruitment$results
+          )
         )
+        if (is.character(growth$result)) {
+          toast_error(growth$result, title = "Population growth error")
+          return()
+        }
+        rv$results_growth <- growth$result
 
-        rv$results_pop_change <- bboutools::bb_predict_population_change(
-          survival$results,
-          recruitment$results,
-          sex_ratio = recruitment$calf_female_ratio
+        pop_change <- catch_output_and_messages(
+          bboutools::bb_predict_population_change(
+            survival$results,
+            recruitment$results
+          )
         )
+        if (is.character(pop_change$result)) {
+          toast_error(pop_change$result, title = "Population change error")
+          return()
+        }
+        rv$results_pop_change <- pop_change$result
+
+        msgs <- unique(c(growth$messages, pop_change$messages))
+        if (!is.null(msgs)) {
+          toast_info(msgs)
+        }
       })
     })
 
@@ -260,7 +288,9 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       {
         req(rv$results_growth)
         withProgress(message = "Generating results", value = 0, {
-          rv$results_plot_growth <- bboutools::bb_plot_year_growth(rv$results_growth)
+          rv$results_plot_growth <- bboutools::bb_plot_year_growth(
+            rv$results_growth
+          )
           rv$results_plot_growth
         })
       },
@@ -274,7 +304,11 @@ mod_population_growth_server <- function(id, survival, recruitment) {
 
     output$download_results_plot_growth_button <- renderUI({
       req(rv$results_growth)
-      downloadButton(ns("download_results_plot_growth"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_growth"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_growth <- downloadHandler(
@@ -296,7 +330,9 @@ mod_population_growth_server <- function(id, survival, recruitment) {
       {
         req(rv$results_pop_change)
         withProgress(message = "Generating results", value = 0, {
-          rv$results_plot_pop_change <- bboutools::bb_plot_year_population_change(rv$results_pop_change)
+          rv$results_plot_pop_change <- bboutools::bb_plot_year_population_change(
+            rv$results_pop_change
+          )
           rv$results_plot_pop_change
         })
       },
@@ -310,7 +346,11 @@ mod_population_growth_server <- function(id, survival, recruitment) {
 
     output$download_results_plot_pop_change_button <- renderUI({
       req(rv$results_pop_change)
-      downloadButton(ns("download_results_plot_pop_change"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_pop_change"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_pop_change <- downloadHandler(

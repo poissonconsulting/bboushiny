@@ -52,6 +52,7 @@ test_that("returns result with real example survival and 1 message", {
   withr::with_envvar(
     new = c(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false"),
     {
+      library(bboutools)
       x <- bboudata::bbousurv_a
 
       expect_output(
@@ -64,35 +65,28 @@ test_that("returns result with real example survival and 1 message", {
 
       expect_type(output[[1]], "list")
       expect_equal(length(output[[1]]), 4L)
-      expect_equal(
+      expect_match(
         output[[2]],
-        c("Removed 1 rows with 'StartTotal' value of 0.")
+        "Removed 1 row.? with .?StartTotal.? value of 0"
       )
     }
   )
 })
 
-test_that("returns result with real example recruitment and 1 message", {
+test_that("returns result with real example recruitment", {
   withr::with_envvar(
     new = c(`_R_S3_METHOD_REGISTRATION_NOTE_OVERWRITES_` = "false"),
     {
       library(bboutools)
       x <- bboudata::bbourecruit_a
-      x[1, 5] <- NA_integer_
-      x[2, 5] <- NA_integer_
 
-      expect_output(
-        output <- suppressMessages(catch_output_and_messages(
-          bboutools::bb_fit_recruitment(data = x, nthin = 1)
-        ))
-      )
+      output <- suppressMessages(catch_output_and_messages(
+        bboutools::bb_fit_recruitment(data = x, nthin = 1)
+      ))
 
       expect_type(output[[1]], "list")
       expect_equal(length(output[[1]]), 4L)
-      expect_equal(
-        output[[2]],
-        c("Removed 2 rows with missing values.")
-      )
+      expect_null(output[[2]])
     }
   )
 })
@@ -136,7 +130,18 @@ test_that("caribou year and month is adjusted and months are in sequence", {
   expect_equal(
     output$Year,
     c(
-      2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
+      2002,
       2003
     )
   )
@@ -147,9 +152,19 @@ test_that("caribou year and month is adjusted and months are in sequence", {
   expect_equal(
     output$CaribouYear,
     c(
-      "2001-2002", "2002-2003", "2002-2003", "2002-2003", "2002-2003",
-      "2002-2003", "2002-2003", "2002-2003", "2002-2003", "2002-2003",
-      "2002-2003", "2002-2003", "2002-2003"
+      "2001-2002",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003",
+      "2002-2003"
     )
   )
 })

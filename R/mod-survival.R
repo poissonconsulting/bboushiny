@@ -23,9 +23,11 @@ mod_survival_ui <- function(id, label = "survival") {
       size = "l"
     ),
     width = 12,
-    tags$label("1. Download Template"), br(),
+    tags$label("1. Download Template"),
+    br(),
     downloadButton(ns("download_survival"), "XLSX", class = "btn-primary"),
-    br(), br(),
+    br(),
+    br(),
     tags$label("2. Select Start Month of Caribou Year"),
     uiOutput(ns("ui_select_start_month")),
     tags$label("3. Upload Data or Use Demo Data"),
@@ -37,7 +39,13 @@ mod_survival_ui <- function(id, label = "survival") {
     uiOutput(ns("ui_include_morts_uncertain")),
     tags$label("6. Include Year Trend"),
     uiOutput(ns("ui_include_trend")),
-    tags$label("7. Run Model"), br(),
+    tags$label("7. Allow Unobserved Years"),
+    uiOutput(ns("ui_allow_missing")),
+    tags$label("8. National Disturbance Priors (optional)"),
+    uiOutput(ns("ui_anthro")),
+    uiOutput(ns("ui_fire_excl_anthro")),
+    tags$label("9. Run Model"),
+    br(),
     actionButton(
       ns("est_survival"),
       "Estimate Survival",
@@ -151,8 +159,18 @@ mod_survival_server <- function(id) {
         ns("select_start_month"),
         label = NULL,
         choices = c(
-          "January", "February", "March", "April", "May", "June", "July",
-          "August", "September", "October", "November", "December"
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
         ),
         selected = "April"
       )
@@ -173,7 +191,8 @@ mod_survival_server <- function(id) {
       )
     })
 
-    observeEvent(input$upload,
+    observeEvent(
+      input$upload,
       {
         # check type of file is correct
         file_type <- try(
@@ -181,7 +200,7 @@ mod_survival_server <- function(id) {
           silent = TRUE
         )
         if (is_try_error(file_type)) {
-          return(showModal(check_modal(file_type)))
+          return(toast_error(file_type))
         }
 
         if (grepl("\\.xlsx", input$upload$datapath)) {
@@ -193,31 +212,34 @@ mod_survival_server <- function(id) {
         # check that there is data (ie upload is not empty)
         num_rows <- try(check_data_not_empty(data), silent = TRUE)
         if (is_try_error(num_rows)) {
-          return(showModal(check_modal(num_rows)))
+          return(toast_error(num_rows))
         }
 
         # check column names
-        col_names <- try(check_col_names(template_survival, data), silent = TRUE)
+        col_names <- try(
+          check_col_names(template_survival, data),
+          silent = TRUE
+        )
         if (is_try_error(col_names)) {
-          return(showModal(check_modal(col_names)))
+          return(toast_error(col_names))
         }
 
         # check column types
         data <- try(check_survival_col_types(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         # check year values
         data <- try(check_data_year(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         # check month values
         data <- try(check_data_month(data), silent = TRUE)
         if (is_try_error(data)) {
-          return(showModal(check_modal(data)))
+          return(toast_error(data))
         }
 
         rv$population_choices <- sort(unique(data[["PopulationName"]]))
@@ -241,7 +263,7 @@ mod_survival_server <- function(id) {
     })
 
     observeEvent(input$demo_survival, {
-      data <- bboudata::bbousurv_a
+      data <- bboudata::bbousurv_multi
       rv$population_choices <- sort(unique(data[["PopulationName"]]))
       data <- add_caribou_year(data, rv$start_month_num)
       rv$data <- data
@@ -258,7 +280,7 @@ mod_survival_server <- function(id) {
       selectInput(
         ns("select_population"),
         label = NULL,
-        choices = rv$population_choices
+        choices = c("All", rv$population_choices)
       )
     })
 
@@ -266,9 +288,13 @@ mod_survival_server <- function(id) {
       req(input$select_population)
       rv$select_population <- input$select_population
 
-      rv$data_filtered <-
-        rv$data |>
-        dplyr::filter(.data$PopulationName == input$select_population)
+      if (input$select_population == "All") {
+        rv$data_filtered <- rv$data
+      } else {
+        rv$data_filtered <-
+          rv$data |>
+          dplyr::filter(.data$PopulationName == input$select_population)
+      }
     })
 
     output$data_table <- DT::renderDT(DT_options(rv$data_filtered))
@@ -306,6 +332,36 @@ mod_survival_server <- function(id) {
       )
     })
 
+    output$ui_allow_missing <- renderUI({
+      checkboxInput(
+        ns("allow_missing"),
+        label = "Yes",
+        value = FALSE
+      )
+    })
+
+    output$ui_anthro <- renderUI({
+      numericInput(
+        ns("anthro"),
+        label = "% Anthropogenic Disturbance",
+        value = NA,
+        min = 0,
+        max = 100,
+        step = 1
+      )
+    })
+
+    output$ui_fire_excl_anthro <- renderUI({
+      numericInput(
+        ns("fire_excl_anthro"),
+        label = "% Fire Excluding Anthropogenic",
+        value = NA,
+        min = 0,
+        max = 100,
+        step = 1
+      )
+    })
+
     # show/hide trend tabs
     shinyjs::hide(selector = "#results li a[data-value='Table Trend']")
     shinyjs::hide(selector = "#results li a[data-value='Plot Trend']")
@@ -323,10 +379,35 @@ mod_survival_server <- function(id) {
       rv$model <- TRUE
       rv$include_trend <- input$include_trend
       rv$include_uncertain_morts <- input$include_morts_uncertain
+      rv$allow_missing <- input$allow_missing
+      rv$anthro <- input$anthro
+      rv$fire_excl_anthro <- input$fire_excl_anthro
 
       # check data is present
       if (is.null(rv$data_filtered)) {
-        return(modal_missing_data())
+        return(toast_missing_data())
+      }
+
+      # validate national priors
+      anthro <- input$anthro
+      fire_excl_anthro <- input$fire_excl_anthro
+      priors <- NULL
+      if (xor(is.na(anthro), is.na(fire_excl_anthro))) {
+        toast_warning(
+          "Both % Anthropogenic Disturbance and % Fire Excluding Anthropogenic must be set to use national priors. Using default priors.",
+          title = "National priors not applied"
+        )
+      } else if (!is.na(anthro) && !is.na(fire_excl_anthro)) {
+        if (anthro + fire_excl_anthro > 100) {
+          return(toast_error(
+            "The sum of % Anthropogenic Disturbance and % Fire Excluding Anthropogenic cannot exceed 100.",
+            title = "Invalid input"
+          ))
+        }
+        priors <- bboutools::bb_priors_survival_national(
+          anthro,
+          fire_excl_anthro
+        )
       }
 
       rv$data_filtered$Month <- as.integer(rv$data_filtered$Month)
@@ -340,16 +421,13 @@ mod_survival_server <- function(id) {
             year_trend = input$include_trend,
             include_uncertain_morts = input$include_morts_uncertain,
             year_start = rv$start_month_num,
-            nthin = c(10, 50, 100, 500)
+            nthin = c(10, 50, 100, 500),
+            priors = priors,
+            allow_missing = input$allow_missing
           )
 
           if (!is.null(fit[[1]]) & !is.null(fit[[2]])) {
-            showModal(
-              modalDialog(
-                paste(fit[[2]], collapse = " "),
-                footer = modalButton("Ok"),
-              )
-            )
+            toast_info(fit[[2]])
           }
         }
       )
@@ -357,7 +435,8 @@ mod_survival_server <- function(id) {
     })
 
     # Results Table Year ------------------------------------------------------
-    observeEvent(rv$results,
+    observeEvent(
+      rv$results,
       {
         withProgress(message = "Generating Results", value = 0, {
           rv$results_table_year <- bboutools::bb_predict_survival(
@@ -424,8 +503,14 @@ mod_survival_server <- function(id) {
     )
 
     # Results Table Month -----------------------------------------------------
-    observeEvent(rv$results,
+    observeEvent(
+      rv$results,
       {
+        # monthly predictions not available for annual survival data
+        if (length(levels(bboutools::augment(rv$results)$Month)) == 1L) {
+          rv$results_table_month <- NULL
+          return()
+        }
         withProgress(message = "Generating Results", value = 0, {
           rv$results_table_month <- bboutools::bb_predict_survival(
             rv$results,
@@ -508,7 +593,11 @@ mod_survival_server <- function(id) {
 
     output$download_results_plot_button_year <- renderUI({
       req(rv$results)
-      downloadButton(ns("download_results_plot_year"), "PNG", class = "btn-results")
+      downloadButton(
+        ns("download_results_plot_year"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_year <- downloadHandler(
@@ -529,6 +618,7 @@ mod_survival_server <- function(id) {
     output$results_plot_month <- renderPlot(
       {
         req(rv$results)
+        req(rv$results_table_month)
         withProgress(message = "Generating Results", value = 0, {
           rv$results_plot_month <- bboutools::bb_plot_month_survival(rv$results)
           rv$results_plot_month
@@ -539,12 +629,18 @@ mod_survival_server <- function(id) {
 
     output$ui_results_plot_month <- renderUI({
       req(rv$results)
+      req(rv$results_table_month)
       plotOutput(ns("results_plot_month"))
     })
 
     output$download_results_plot_button_month <- renderUI({
       req(rv$results)
-      downloadButton(ns("download_results_plot_month"), "PNG", class = "btn-results")
+      req(rv$results_table_month)
+      downloadButton(
+        ns("download_results_plot_month"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_month <- downloadHandler(
@@ -562,7 +658,8 @@ mod_survival_server <- function(id) {
     )
 
     # Results Table Trend -----------------------------------------------------
-    observeEvent(rv$results,
+    observeEvent(
+      rv$results,
       {
         req(input$include_trend)
         withProgress(message = "Generating Results", value = 0, {
@@ -629,9 +726,12 @@ mod_survival_server <- function(id) {
     output$results_plot_trend <- renderPlot(
       {
         req(rv$results)
+        req(input$include_trend)
 
         withProgress(message = "Generating Results", value = 0, {
-          rv$results_plot_trend <- bboutools::bb_plot_year_trend_survival(rv$results)
+          rv$results_plot_trend <- bboutools::bb_plot_year_trend_survival(
+            rv$results
+          )
           rv$results_plot_trend
         })
       },
@@ -640,19 +740,27 @@ mod_survival_server <- function(id) {
 
     output$ui_results_plot_trend <- renderUI({
       req(rv$results)
+      req(input$include_trend)
       plotOutput(ns("results_plot_trend"))
     })
 
     output$download_results_plot_button_trend <- renderUI({
       req(rv$results)
-      downloadButton(ns("download_results_plot_trend"), "PNG", class = "btn-results")
+      req(input$include_trend)
+      downloadButton(
+        ns("download_results_plot_trend"),
+        "PNG",
+        class = "btn-results"
+      )
     })
 
     output$download_results_plot_trend <- downloadHandler(
       filename = "results_survival_trend.png",
       content = function(file) {
         plot <- rv$results_plot_trend +
-          ggplot2::ggtitle("Annual survival estimates as trend line with credible limits")
+          ggplot2::ggtitle(
+            "Annual survival estimates as trend line with credible limits"
+          )
 
         ggplot2::ggsave(
           file,
@@ -663,7 +771,8 @@ mod_survival_server <- function(id) {
     )
 
     # Clear Variables ---------------------------------------------------------
-    observeEvent(input$select_start_month,
+    observeEvent(
+      input$select_start_month,
       {
         rv$results <- NULL
         rv$results_plot_year <- NULL
@@ -679,7 +788,8 @@ mod_survival_server <- function(id) {
       label = "clears results when caribou start month changed"
     )
 
-    observeEvent(input$upload,
+    observeEvent(
+      input$upload,
       {
         rv$results <- NULL
         rv$results_plot_year <- NULL
@@ -695,7 +805,8 @@ mod_survival_server <- function(id) {
       label = "clears results when new file uploaded"
     )
 
-    observeEvent(input$select_population,
+    observeEvent(
+      input$select_population,
       {
         rv$results <- NULL
         rv$results_plot_year <- NULL
@@ -711,7 +822,8 @@ mod_survival_server <- function(id) {
       label = "clears results when new population selected"
     )
 
-    observeEvent(input$include_morts_uncertain,
+    observeEvent(
+      input$include_morts_uncertain,
       {
         rv$results <- NULL
         rv$results_plot_year <- NULL
@@ -727,7 +839,8 @@ mod_survival_server <- function(id) {
       label = "clears results when uncertain mortalities changed"
     )
 
-    observeEvent(input$include_trend,
+    observeEvent(
+      input$include_trend,
       {
         rv$results <- NULL
         rv$results_plot_year <- NULL
@@ -741,6 +854,57 @@ mod_survival_server <- function(id) {
         rv$results_dl_list_trend <- NULL
       },
       label = "clears results when trend checked or unchecked"
+    )
+
+    observeEvent(
+      input$allow_missing,
+      {
+        rv$results <- NULL
+        rv$results_plot_year <- NULL
+        rv$results_plot_month <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_table_year <- NULL
+        rv$results_table_month <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_dl_list_year <- NULL
+        rv$results_dl_list_month <- NULL
+        rv$results_dl_list_trend <- NULL
+      },
+      label = "clears results when allow missing changed"
+    )
+
+    observeEvent(
+      input$anthro,
+      {
+        rv$results <- NULL
+        rv$results_plot_year <- NULL
+        rv$results_plot_month <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_table_year <- NULL
+        rv$results_table_month <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_dl_list_year <- NULL
+        rv$results_dl_list_month <- NULL
+        rv$results_dl_list_trend <- NULL
+      },
+      label = "clears results when anthro disturbance changed"
+    )
+
+    observeEvent(
+      input$fire_excl_anthro,
+      {
+        rv$results <- NULL
+        rv$results_plot_year <- NULL
+        rv$results_plot_month <- NULL
+        rv$results_plot_trend <- NULL
+        rv$results_table_year <- NULL
+        rv$results_table_month <- NULL
+        rv$results_table_trend <- NULL
+        rv$results_dl_list_year <- NULL
+        rv$results_dl_list_month <- NULL
+        rv$results_dl_list_trend <- NULL
+      },
+      label = "clears results when fire disturbance changed"
     )
 
     return(rv)

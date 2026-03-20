@@ -21,8 +21,15 @@ testServer(mod_recruitment_server, args = list(survival = list()), {
   expect_equal(
     colnames(recruitment_template),
     c(
-      "PopulationName", "Year", "Month", "Day", "Cows", "Bulls",
-      "UnknownAdults", "Yearlings", "Calves"
+      "PopulationName",
+      "Year",
+      "Month",
+      "Day",
+      "Cows",
+      "Bulls",
+      "UnknownAdults",
+      "Yearlings",
+      "Calves"
     )
   )
 })
@@ -297,8 +304,15 @@ test_that("throws error when dataframe is empty ie no data added to template", {
   df <- setNames(
     data.frame(matrix(ncol = 9, nrow = 0)),
     c(
-      "PopulationName", "Year", "Month", "Day", "Cows", "Bulls",
-      "UnknownAdults", "Yearlings", "Calves"
+      "PopulationName",
+      "Year",
+      "Month",
+      "Day",
+      "Cows",
+      "Bulls",
+      "UnknownAdults",
+      "Yearlings",
+      "Calves"
     )
   )
 
