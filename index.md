@@ -16,6 +16,7 @@ To install the latest version from
 [GitHub](https://github.com/poissonconsulting/bboushiny)
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("poissonconsulting/bboushiny")
 ```
@@ -36,6 +37,7 @@ Run the
 function.
 
 ``` r
+
 # install.packages("bboushiny")
 library(bboushiny)
 run_bbou_app()
