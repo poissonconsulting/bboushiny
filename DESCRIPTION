@@ -4,7 +4,7 @@ Title: Shiny App for Analysing Boreal Caribou Surival, Recruitment and
     Lambda
 Version: 0.3.1
 Authors@R: c(
-    person("Pearson", "Ayla", , "ayla@poissonconsulting.ca", role = c("aut", "cre"),
+    person("Ayla", "Pearson", , "ayla@poissonconsulting.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7388-1222")),
     person("Joe", "Thorley", , "joe@poissonconsulting.ca", role = "ctb",
            comment = c(ORCID = "0000-0002-7683-4592")),
