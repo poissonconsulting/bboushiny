@@ -15,3 +15,5 @@
 ^pkgdown$
 ^test-app$
 claude.md
+^[.]?air[.]toml$
+^\.vscode$
